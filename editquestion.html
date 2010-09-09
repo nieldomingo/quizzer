@@ -1,0 +1,60 @@
+		<div id="questionform">
+			<div class="field">
+				<div class="label">
+					Question Type
+				</div>
+				<div class="widget">
+					{% if question %}
+						<select name="questiontype">
+							{% ifequal question.questiontype 1 %}
+								<option value="1" selected="true">Numerical Answer</option>
+							{% else %}
+								<option value="1">Numerical Answer</option>
+							{% endifequal %}
+							{% ifequal question.questiontype 2 %}
+								<option value="2" selected="true">Text Answer</option>
+							{% else %}
+								<option value="2">Text Answer</option>
+							{% endifequal %}
+						</select>
+					{% else %}
+						<select name="questiontype">
+							<option value="1">Numerical Answer</option>
+							<option value="2">Text Answer</option>
+						</select>
+					{% endif %}
+				</div>
+			</div>
+			<div class="field">
+				<div class="label">
+					Question
+				</div>
+				<div class="widget">
+					{% if question %}
+						<textarea name="question">{{ question.question }}</textarea>
+					{% else %}
+						<textarea name="question"></textarea>
+					{% endif %}
+				</div>
+			</div>
+			<div class="field">
+				<div class="label">
+					Answer
+				</div>
+				<div class="widget">
+					{% if question %}
+						<input name="answer" type="text" value="{{ question.answer }}"/>
+					{% else %}
+						<input name="answer" type="text"/>
+					{% endif %}
+				</div>
+			</div>
+			{% if question %}
+				<input name="key" value="{{ question.key }}" type="hidden" />
+			{% endif %}
+			
+			<div class="controls">
+				<input name="save" value="Save" type="button" />
+				<input name="cancel"  value="Cancel" type="button" />
+			</div>
+		</div>

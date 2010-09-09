@@ -1,0 +1,20 @@
+<table>
+	<thead>
+		<th><th>
+		<th>Question Type</th>
+		<th>Question</th>
+		<th>Answer</th>
+	</thead>
+	<tbody>
+		{% for q in questions %}
+			<tr class="questionrow" key="{{q.key}}">
+				<td>
+					<input type="checkbox" name="{{ q.key }}" value="{{ q.key }}"/>
+				</td>
+				<td>{{ q.questiontype }}</td>
+				<td>{{ q.question }}</td>
+				<td>{{ q.answer }}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
