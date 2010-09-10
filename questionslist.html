@@ -1,6 +1,7 @@
 <table>
 	<thead>
-		<th><th>
+		<th></th>
+		<th>Category</th>
 		<th>Question Type</th>
 		<th>Question</th>
 		<th>Answer</th>
@@ -11,6 +12,7 @@
 				<td>
 					<input type="checkbox" name="{{ q.key }}" value="{{ q.key }}"/>
 				</td>
+				<td>{{ q.category }}</td>
 				<td>{{ q.questiontype }}</td>
 				<td>{{ q.question }}</td>
 				<td>{{ q.answer }}</td>

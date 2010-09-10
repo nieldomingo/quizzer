@@ -1,6 +1,30 @@
 		<div id="questionform">
 			<div class="field">
 				<div class="label">
+					Category
+				</div>
+				<div class="widget">
+					{% if question %}
+						<select name="questioncategory">
+							{% for category in categories %}
+								{% ifequal category question.category %}
+									<option value="{{ category }}" selected="true">{{ category }}</option>
+								{% else %}
+									<option value="{{ category }}">{{ category }}</option>
+								{% endifequal %}
+							{% endfor %}
+						</select>
+					{% else %}
+						<select name="questioncategory">
+							{% for category in categories %}
+								<option value="{{ category }}">{{ category }}</option>
+							{% endfor %}
+						</select>
+					{% endif %}
+				</div>
+			</div>
+			<div class="field">
+				<div class="label">
 					Question Type
 				</div>
 				<div class="widget">

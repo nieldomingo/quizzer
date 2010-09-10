@@ -11,6 +11,7 @@ function SaveQuestionResult(data) {
 }
 
 function SaveQuestion() {
+	var category = $("#questionform select[name='questioncategory']").val();
 	var questiontype = $("#questionform select[name='questiontype']").val();
 	var question = $("#questionform textarea[name='question']").val();
 	var answer = $("#questionform input[name='answer']").val();
@@ -33,9 +34,9 @@ function SaveQuestion() {
 		}
 	}
 	if (key)
-		$.getJSON('/savequestion', {'questiontype': questiontype, 'question': question, 'answer': answer, 'key': key}, SaveQuestionResult)
+		$.getJSON('/savequestion', {'questioncategory': category, 'questiontype': questiontype, 'question': question, 'answer': answer, 'key': key}, SaveQuestionResult)
 	else
-		$.getJSON('/savequestion', {'questiontype': questiontype, 'question': question, 'answer': answer}, SaveQuestionResult)
+		$.getJSON('/savequestion', {'questioncategory': category, 'questiontype': questiontype, 'question': question, 'answer': answer}, SaveQuestionResult)
 }
 
 function InitializeQuestionForm() {
@@ -51,7 +52,7 @@ function DisplayQuestion() {
 }
 
 function LoadQuestions() {
-	$("#questionslist").load("/getquestions", function() {
+	$("#questionslistcontent").load("/getquestions", function() {
 		$("#questionslist .questionrow").unbind('click');
 		$("#questionslist .questionrow").click(DisplayQuestion);
 		$("#questionslist .questionrow").mouseenter(function() {
@@ -108,6 +109,18 @@ $(document).ready(function() {
 			$("#questionform input[name='save']").click(SaveQuestion);
 		});
 		$("#editquestion").show();
+	});
+	
+	$("input[name='deletequestions']").click(function () {
+		var l = $(".questionrow input[type='checkbox']:checked").map(function () {
+			return $(this).val();
+		});
+		if (l) {
+			keys = l.get().join(',');
+			$.post("/deletequestions", {'keys': keys}, function () {
+				LoadQuestions();
+			});
+		}	
 	});
 	
 });

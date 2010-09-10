@@ -25,12 +25,15 @@ import json
 import cgi
 import urllib
 
+CATEGORIES = ['Math', 'Engineering Science', 'Electrical Engineering']
+
 class Question(db.Model):
 	author = db.UserProperty(auto_current_user_add=True)
 	questiontype = db.IntegerProperty()
 	question = db.TextProperty()
 	answer = db.StringProperty()
 	datetime = db.DateTimeProperty(auto_now_add=True)
+	category = db.StringProperty()
 
 class MainHandler(webapp.RequestHandler):
 	def get(self):
@@ -43,13 +46,14 @@ class ManageQuestionHandler(webapp.RequestHandler):
 
 class SaveQuestionHandler(webapp.RequestHandler):
 	def get(self):
+		category = self.request.get('questioncategory')
 		questiontype = self.request.get('questiontype')
 		question = self.request.get('question')
 		answer = self.request.get('answer')
 		key = self.request.get('key')
 		
 		if not key:
-			q = Question(questiontype=int(questiontype), question=question, answer=answer)
+			q = Question(questiontype=int(questiontype), question=question, answer=answer, category=category)
 			
 			try:	
 				q.put()
@@ -61,6 +65,7 @@ class SaveQuestionHandler(webapp.RequestHandler):
 			q.questiontype = int(questiontype)
 			q.question = question
 			q.answer = answer
+			q.category = category
 			
 			try:	
 				q.put()
@@ -84,6 +89,7 @@ class GetQuestionsHandler(webapp.RequestHandler):
 			d['question'] = q.question
 			d['answer'] = q.answer
 			d['datetime'] = q.datetime.isoformat()
+			d['category'] = q.category
 			qlist.append(d)
 		
 		path = os.path.join(os.path.dirname(__file__), 'questionslist.html')
@@ -102,11 +108,27 @@ class EditQuestionHandler(webapp.RequestHandler):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
 		path = os.path.join(os.path.dirname(__file__), 'editquestion.html')
-		self.response.out.write(template.render(path, dict(question=question)))
+		self.response.out.write(template.render(path, dict(question=question, categories=CATEGORIES)))
 			
 	def get(self):
 		path = os.path.join(os.path.dirname(__file__), 'editquestion.html')
-		self.response.out.write(template.render(path, dict()))
+		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
+		
+class DeleteQuestionsHandler(webapp.RequestHandler):
+	def post(self):
+		keys = self.request.get('keys')
+		for key_name in keys.split(','):
+			question = db.get(db.Key(key_name))
+			question.delete();
+			
+class TestQuestionsHandler(webapp.RequestHandler):
+	def get(self):
+		question = "Lorem ipsum est ad kasd meliore, at vim facilis eloquentiam, ex est elit utamur dissentiet. Ne usu tollit laoreet, fabulas posidonium duo no. Cum quaeque consequuntur at. Qui ei eius interesset. Novum consectetuer vel eu, has admodum inciderint te."
+		answer = "100"
+		for category in CATEGORIES:
+			for i in range(100):
+				q = Question(questiontype=1, question=question, answer=answer, category=category)
+				q.put()
 
 def main():
 	application = webapp.WSGIApplication([('/', MainHandler),
@@ -114,7 +136,9 @@ def main():
 	                                      ('/savequestion', SaveQuestionHandler),
 	                                      ('/getquestions', GetQuestionsHandler),
 	                                      ('/questionview', QuestionViewHandler),
-	                                      ('/editquestion', EditQuestionHandler)],
+	                                      ('/editquestion', EditQuestionHandler),
+	                                      ('/deletequestions', DeleteQuestionsHandler),
+	                                      ('/testquestions', TestQuestionsHandler)],
 										 debug=True)
 	util.run_wsgi_app(application)
 
