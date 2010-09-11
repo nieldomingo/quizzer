@@ -69,7 +69,7 @@ function LoadQuestions() {
 
 $(document).ready(function() {
 	
-	$("#buttons input[name='addquestion']").click(function() {
+	$("input[name='addquestion']").click(function() {
 		$("#questionslist").hide();
 		$("#questionview").hide();
 		$("#editquestioncontent").load("/editquestion", function () {

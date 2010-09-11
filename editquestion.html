@@ -7,17 +7,17 @@
 					{% if question %}
 						<select name="questioncategory">
 							{% for category in categories %}
-								{% ifequal category question.category %}
-									<option value="{{ category }}" selected="true">{{ category }}</option>
+								{% ifequal category.0 question.category %}
+									<option value="{{ category.0 }}" selected="true">{{ category.1 }}</option>
 								{% else %}
-									<option value="{{ category }}">{{ category }}</option>
+									<option value="{{ category.0 }}">{{ category.1 }}</option>
 								{% endifequal %}
 							{% endfor %}
 						</select>
 					{% else %}
 						<select name="questioncategory">
 							{% for category in categories %}
-								<option value="{{ category }}">{{ category }}</option>
+								<option value="{{ category.0 }}">{{ category.1 }}</option>
 							{% endfor %}
 						</select>
 					{% endif %}

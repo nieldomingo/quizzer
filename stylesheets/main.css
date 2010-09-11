@@ -1,8 +1,44 @@
-.floatingform {
-	display: none;
+body {
+	font-family: Arial;
+	font-size: 14px;
 }
 
 .overquestionrow {
-	background-color: #ADDFFF;
+	/*background-color: #ADDFFF;*/
 	cursor: pointer;
+}
+
+#sidebar {
+	width: 100px;
+	float: left;
+}
+
+#main {
+	margin-left: 150px;
+}
+
+#header {
+	height: 100px;
+}
+
+#maincontent {
+	border: 5px solid #BBCCFF;
+	border-right: none;
+}
+
+.maincontenttop {
+	background-color: #E3E9FF;
+	padding: 10px;
+}
+
+.questionrow {
+	background-color: #EDF0F9;
+	border-top: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+}
+
+#questionslistcontent table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	font-size: 14px;
 }

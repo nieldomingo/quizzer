@@ -25,7 +25,7 @@ import json
 import cgi
 import urllib
 
-CATEGORIES = ['Math', 'Engineering Science', 'Electrical Engineering']
+CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
 
 class Question(db.Model):
 	author = db.UserProperty(auto_current_user_add=True)
@@ -33,7 +33,7 @@ class Question(db.Model):
 	question = db.TextProperty()
 	answer = db.StringProperty()
 	datetime = db.DateTimeProperty(auto_now_add=True)
-	category = db.StringProperty()
+	category = db.IntegerProperty()
 
 class MainHandler(webapp.RequestHandler):
 	def get(self):
@@ -53,9 +53,9 @@ class SaveQuestionHandler(webapp.RequestHandler):
 		key = self.request.get('key')
 		
 		if not key:
-			q = Question(questiontype=int(questiontype), question=question, answer=answer, category=category)
+			q = Question(questiontype=int(questiontype), question=question, answer=answer, category=int(category))
 			
-			try:	
+			try:
 				q.put()
 				self.response.out.write(json.dumps(dict(result="saved")))
 			except db.NotSavedError:
@@ -65,7 +65,7 @@ class SaveQuestionHandler(webapp.RequestHandler):
 			q.questiontype = int(questiontype)
 			q.question = question
 			q.answer = answer
-			q.category = category
+			q.category = int(category)
 			
 			try:	
 				q.put()
@@ -89,7 +89,7 @@ class GetQuestionsHandler(webapp.RequestHandler):
 			d['question'] = q.question
 			d['answer'] = q.answer
 			d['datetime'] = q.datetime.isoformat()
-			d['category'] = q.category
+			d['category'] = dict(CATEGORIES)[q.category]
 			qlist.append(d)
 		
 		path = os.path.join(os.path.dirname(__file__), 'questionslist.html')
@@ -100,8 +100,9 @@ class QuestionViewHandler(webapp.RequestHandler):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
 		
+		category = dict(CATEGORIES)[question.category]
 		path = os.path.join(os.path.dirname(__file__), 'questionview.html')
-		self.response.out.write(template.render(path, dict(question=question)))
+		self.response.out.write(template.render(path, dict(question=question, category=category)))
 		
 class EditQuestionHandler(webapp.RequestHandler):
 	def post(self):
@@ -127,7 +128,7 @@ class TestQuestionsHandler(webapp.RequestHandler):
 		answer = "100"
 		for category in CATEGORIES:
 			for i in range(100):
-				q = Question(questiontype=1, question=question, answer=answer, category=category)
+				q = Question(questiontype=1, question=question, answer=answer, category=category[0])
 				q.put()
 
 def main():
