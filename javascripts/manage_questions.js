@@ -51,19 +51,49 @@ function DisplayQuestion() {
 	$("#questionviewcontent").load("/questionview", {'key': $(this).attr('key')})
 }
 
-function LoadQuestions() {
-	$("#questionslistcontent").load("/getquestions", function() {
+function LoadQuestions(initial) {
+	var offset = 0;
+	if (!initial) {
+		offset = $("#questionslist input[name='qlistoffset']").val();
+	}
+	$("#questionslist").load("/getquestions", {'offset': offset}, function() {
 		$("#questionslist .questionrow").unbind('click');
 		$("#questionslist .questionrow").click(DisplayQuestion);
+		/*
 		$("#questionslist .questionrow").mouseenter(function() {
 			$(this).addClass('overquestionrow');
 		});
 		$("#questionslist .questionrow").mouseleave(function() {
 			$(this).removeClass('overquestionrow');
 		});
+		*/
 		$("#questionslist input[type='checkbox']").click(function (event) {
 			event.stopPropagation();
 		});
+		
+		$("input[name='deletequestions']").unbind('click');
+		$("input[name='deletequestions']").click(function () {
+			var l = $(".questionrow input[type='checkbox']:checked").map(function () {
+				return $(this).val();
+			});
+			if (l) {
+				keys = l.get().join(',');
+				$.post("/deletequestions", {'keys': keys}, function () {
+					LoadQuestions();
+				});
+			}	
+		});
+		
+		$("#questionslist #nextlink").click( function () {
+			LoadQuestions(false);
+		});
+		
+		$("#questionslist #prevlink").click( function () {
+			var offset = $("#questionslist input[name='qlistoffset']").val();
+			$("#questionslist input[name='qlistoffset']").val(offset - 50);
+			LoadQuestions(false);
+		});
+		
 	});
 }
 
@@ -89,7 +119,7 @@ $(document).ready(function() {
 	//$("#questionform input[name='save']").click(SaveQuestion);
 	
 	$("#questionview").hide();
-	LoadQuestions();
+	LoadQuestions(initial=true);
 	
 	$("input[name='closequestion']").click(function () {
 		$("#questionview").hide();
@@ -111,6 +141,7 @@ $(document).ready(function() {
 		$("#editquestion").show();
 	});
 	
+	/*
 	$("input[name='deletequestions']").click(function () {
 		var l = $(".questionrow input[type='checkbox']:checked").map(function () {
 			return $(this).val();
@@ -122,5 +153,6 @@ $(document).ready(function() {
 			});
 		}	
 	});
+	*/
 	
 });

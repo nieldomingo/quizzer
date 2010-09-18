@@ -1,0 +1,15 @@
+<div id="quizlistcontent">
+	<table>
+		<tbody>
+			{% for q in quizzes %}
+				<tr class="quizrow">
+					<td>
+						<input type="checkbox" name="{{ q.key }}" value="{{ q.key }}"/>
+					</td>
+					<td>{{ q.author }}</td>
+					<td>{{ q.title }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>

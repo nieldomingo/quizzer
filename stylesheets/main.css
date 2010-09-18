@@ -31,14 +31,16 @@ body {
 	padding: 10px;
 }
 
-.questionrow {
-	background-color: #EDF0F9;
+.questionrow, .quizrow {
+	/*background-color: #EDF0F9;*/
 	border-top: 1px solid #CCCCCC;
 	border-bottom: 1px solid #CCCCCC;
+	cursor: pointer;
 }
 
-#questionslistcontent table {
+#questionslistcontent table, #quizlistcontent table {
 	border-collapse: collapse;
 	border-spacing: 0;
 	font-size: 14px;
+	width: 100%;
 }

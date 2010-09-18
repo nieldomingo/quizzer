@@ -24,8 +24,11 @@ import os
 import json
 import cgi
 import urllib
+import random
+import datetime
 
 CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
+QUESTIONSPERQUIZ = 10
 
 class Question(db.Model):
 	author = db.UserProperty(auto_current_user_add=True)
@@ -34,6 +37,15 @@ class Question(db.Model):
 	answer = db.StringProperty()
 	datetime = db.DateTimeProperty(auto_now_add=True)
 	category = db.IntegerProperty()
+	
+class Quiz(db.Model):
+	title = db.StringProperty()
+	quiztype = db.IntegerProperty()
+	quizzer = db.UserProperty()
+	author = db.UserProperty(auto_current_user_add=True)
+	datetime = db.DateTimeProperty(auto_now_add=True)
+	questions = db.ListProperty(db.Key)
+	completed = db.BooleanProperty(default=False)
 
 class MainHandler(webapp.RequestHandler):
 	def get(self):
@@ -74,11 +86,19 @@ class SaveQuestionHandler(webapp.RequestHandler):
 				self.response.out.write(json.dumps(dict(result="not saved")))
 
 class GetQuestionsHandler(webapp.RequestHandler):
-	def get(self):
-		questions = db.GqlQuery("SELECT * FROM Question")
+	def post(self):
+		questions = Question.all()
+		
+		totalcount = questions.count()
+		limit = 25
+		offset = 0
+		
+		if self.request.get('offset'):
+			offset = int(self.request.get('offset'))
 		
 		qlist = []
-		for q in questions:
+		questionslist = questions.fetch(limit, offset)
+		for q in questionslist:
 			d = {}
 			d['key'] = q.key()
 			d['author'] = q.author
@@ -92,8 +112,16 @@ class GetQuestionsHandler(webapp.RequestHandler):
 			d['category'] = dict(CATEGORIES)[q.category]
 			qlist.append(d)
 		
+		newoffset = offset + limit
+		if (offset - limit) >= 0:
+			prev=True
+		else:
+			prev=False
 		path = os.path.join(os.path.dirname(__file__), 'questionslist.html')
-		self.response.out.write(template.render(path, dict(questions=qlist)))
+		if newoffset < totalcount:
+			self.response.out.write(template.render(path, dict(questions=qlist, offset=newoffset, prev=prev, next=True)))
+		else:
+			self.response.out.write(template.render(path, dict(questions=qlist, offset=newoffset, prev=prev, next=False)))
 
 class QuestionViewHandler(webapp.RequestHandler):
 	def post(self):
@@ -122,6 +150,62 @@ class DeleteQuestionsHandler(webapp.RequestHandler):
 			question = db.get(db.Key(key_name))
 			question.delete();
 			
+class MyQuizzesHandler(webapp.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		if not user:
+			self.redirect(users.create_login_url(self.request.uri))
+		else:
+			path = os.path.join(os.path.dirname(__file__), 'myquizzes.html')
+			self.response.out.write(template.render(path, {}))
+
+class GenerateQuizFormHandler(webapp.RequestHandler):
+	def get(self):
+		path = os.path.join(os.path.dirname(__file__), 'generatequizform.html')
+		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
+		
+class GenerateQuizHandler(webapp.RequestHandler):
+	def get(self):
+		category = self.request.get('category')
+		user = users.get_current_user()
+		query = Question.all()
+		query.filter('category =', int(category))
+		totalcount = query.count()
+		
+		quiz = Quiz()
+		timestamp = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		quiz.title = 'Generated Quiz %s [%s]'%(timestamp, dict(CATEGORIES)[int(category)])
+		quiz.quiztype = 0
+		quiz.quizzer = user
+		
+		if totalcount >= 10:
+			indices = random.sample(range(totalcount), QUESTIONSPERQUIZ)
+			for index, question in enumerate(query):
+				if index in indices:
+					quiz.questions.append(question.key())
+		else:
+			for question in query:
+				quiz.questions.append(question.key())
+		
+		quiz.put()
+		
+		self.response.out.write("%s"%totalcount)
+		
+class ListQuizHandler(webapp.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		
+		query = Quiz.all()
+		query.filter('quizzer =', user)
+		query.order('-datetime')
+		quizzes = []
+		for q in query:
+			quizzes.append(dict(title=q.title, completed=q.completed, key=q.key(), author=q.author.nickname()))
+			
+		path = os.path.join(os.path.dirname(__file__), 'listquiz.html')
+		self.response.out.write(template.render(path, dict(quizzes=quizzes)))
+			
+			
 class TestQuestionsHandler(webapp.RequestHandler):
 	def get(self):
 		question = "Lorem ipsum est ad kasd meliore, at vim facilis eloquentiam, ex est elit utamur dissentiet. Ne usu tollit laoreet, fabulas posidonium duo no. Cum quaeque consequuntur at. Qui ei eius interesset. Novum consectetuer vel eu, has admodum inciderint te."
@@ -139,6 +223,10 @@ def main():
 	                                      ('/questionview', QuestionViewHandler),
 	                                      ('/editquestion', EditQuestionHandler),
 	                                      ('/deletequestions', DeleteQuestionsHandler),
+	                                      ('/myquizzes', MyQuizzesHandler),
+	                                      ('/generatequizform', GenerateQuizFormHandler),
+	                                      ('/generatequiz', GenerateQuizHandler),
+	                                      ('/listquiz', ListQuizHandler),
 	                                      ('/testquestions', TestQuestionsHandler)],
 										 debug=True)
 	util.run_wsgi_app(application)

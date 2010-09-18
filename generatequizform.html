@@ -1,0 +1,18 @@
+<div id="generatequizformcontent">
+	<div class="field">
+		<div class="label">
+			Category
+		</div>
+		<div class="widget">
+			<select name="quizcategory">
+				{% for category in categories %}
+					<option value="{{ category.0 }}">{{ category.1 }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="controls">
+		<input name="generate" value="Generate" type="button" />
+		<input name="cancel"  value="Cancel" type="button" />
+	</div>
+</div>
