@@ -1,5 +1,9 @@
 function LoadQuizzes() {
 	$("#quizlist").load("/listquiz", function () {
+		$("#quizlistcontent .quizrow").click(function () {
+			var key = $(this).find("input[type='checkbox']").val();
+			window.location = '/quiz?key=' + key;
+		});
 	});
 }
 

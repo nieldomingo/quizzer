@@ -204,8 +204,32 @@ class ListQuizHandler(webapp.RequestHandler):
 			
 		path = os.path.join(os.path.dirname(__file__), 'listquiz.html')
 		self.response.out.write(template.render(path, dict(quizzes=quizzes)))
-			
-			
+
+class QuizHandler(webapp.RequestHandler):
+	def get(self):
+		key_name = self.request.get('key')
+		quiz = db.get(db.Key(key_name))
+		
+		path = os.path.join(os.path.dirname(__file__), 'quiz.html')
+		self.response.out.write(template.render(path, dict(quiz=quiz)))
+		
+class QuizQuestionViewHandler(webapp.RequestHandler):
+	def post(self):
+		key_name = self.request.get('key')
+		question = db.get(db.Key(key_name))
+		
+		path = os.path.join(os.path.dirname(__file__), 'quizquestionview.html')
+		self.response.out.write(template.render(path, dict(question=question)))
+		
+class QuizQuestionAnswerHandler(webapp.RequestHandler):
+	def post(self):
+		key_name = self.request.get('key')
+		question = db.get(db.Key(key_name))
+		
+		answer = self.request.get('answer')
+		if question.questiontype == 1:
+			pass
+
 class TestQuestionsHandler(webapp.RequestHandler):
 	def get(self):
 		question = "Lorem ipsum est ad kasd meliore, at vim facilis eloquentiam, ex est elit utamur dissentiet. Ne usu tollit laoreet, fabulas posidonium duo no. Cum quaeque consequuntur at. Qui ei eius interesset. Novum consectetuer vel eu, has admodum inciderint te."
@@ -227,6 +251,8 @@ def main():
 	                                      ('/generatequizform', GenerateQuizFormHandler),
 	                                      ('/generatequiz', GenerateQuizHandler),
 	                                      ('/listquiz', ListQuizHandler),
+	                                      ('/quiz', QuizHandler),
+	                                      ('/quizquestionview', QuizQuestionViewHandler),
 	                                      ('/testquestions', TestQuestionsHandler)],
 										 debug=True)
 	util.run_wsgi_app(application)
