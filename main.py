@@ -26,9 +26,10 @@ import cgi
 import urllib
 import random
 import datetime
+import math
 
 CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
-QUESTIONSPERQUIZ = 10
+QUESTIONSPERQUIZ = 5
 
 class Question(db.Model):
 	author = db.UserProperty(auto_current_user_add=True)
@@ -46,6 +47,19 @@ class Quiz(db.Model):
 	datetime = db.DateTimeProperty(auto_now_add=True)
 	questions = db.ListProperty(db.Key)
 	completed = db.BooleanProperty(default=False)
+	
+class QuizSession(db.Model):
+	quiz = db.ReferenceProperty(Quiz)
+	datetime = db.DateTimeProperty(auto_now_add=True)
+	quizzer = db.UserProperty(auto_current_user_add=True)
+	answers = db.ListProperty(db.Key)
+	completed = db.BooleanProperty(default=False)
+
+class QuizSessionAnswer(db.Model):
+	quizzer = db.UserProperty(auto_current_user_add=True)
+	answer = db.StringProperty()
+	correct = db.BooleanProperty(default=False)
+	duration = db.IntegerProperty()
 
 class MainHandler(webapp.RequestHandler):
 	def get(self):
@@ -222,13 +236,65 @@ class QuizQuestionViewHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(question=question)))
 		
 class QuizQuestionAnswerHandler(webapp.RequestHandler):
-	def post(self):
+	def get(self):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
 		
+		sessionkey = self.request.get('sessionkey')
+		quizsession = db.get(db.Key(sessionkey))
+		
 		answer = self.request.get('answer')
 		if question.questiontype == 1:
-			pass
+			qsa = QuizSessionAnswer()
+			qsa.answer = answer
+			try:
+				error = math.fabs((float(question.answer) - float(answer)) / float(question.answer))
+				if error < 0.01:
+					self.response.headers['Content-Type'] = 'text/json'
+					self.response.out.write(json.dumps(dict(result="correct")))
+					qsa.correct = True
+				else:
+					self.response.headers['Content-Type'] = 'text/json'
+					self.response.out.write(json.dumps(dict(result="wrong")))
+			except ValueError:
+				self.response.headers['Content-Type'] = 'text/json'
+				self.response.out.write(json.dumps(dict(result="wrong")))
+			qsa.put()
+			quizsession.answers.append(qsa.key())
+			quizsession.put()
+				
+class QuizEndHandler(webapp.RequestHandler):
+	def post(self):
+		key_name = self.request.get('quizkey')
+		quiz = db.get(db.Key(key_name))
+		
+		sessionkey = self.request.get('sessionkey')
+		quizsession = db.get(db.Key(sessionkey))
+		
+		quizsession.completed = True
+		
+		results = []
+		for index, key in enumerate(quizsession.answers):
+			qsa = db.get(key)
+			results.append(qsa)
+		
+		path = os.path.join(os.path.dirname(__file__), 'quizend.html')
+		self.response.out.write(template.render(path, dict(results=results)))
+		
+class StartQuizHandler(webapp.RequestHandler):
+	def get(self):
+		key_name = self.request.get('quizkey')
+		quiz = db.get(db.Key(key_name))
+		
+		quizsession = QuizSession()
+		quizsession.quiz = quiz
+		
+		quizsession.put()
+		
+		sessionkey = str(quizsession.key())
+		
+		self.response.headers['Content-Type'] = 'text/json'
+		self.response.out.write(json.dumps(dict(sessionkey=sessionkey)))
 
 class TestQuestionsHandler(webapp.RequestHandler):
 	def get(self):
@@ -236,7 +302,7 @@ class TestQuestionsHandler(webapp.RequestHandler):
 		answer = "100"
 		for category in CATEGORIES:
 			for i in range(100):
-				q = Question(questiontype=1, question=question, answer=answer, category=category[0])
+				q = Question(questiontype=1, question="Question %s "%i + question, answer=answer, category=category[0])
 				q.put()
 
 def main():
@@ -253,6 +319,9 @@ def main():
 	                                      ('/listquiz', ListQuizHandler),
 	                                      ('/quiz', QuizHandler),
 	                                      ('/quizquestionview', QuizQuestionViewHandler),
+	                                      ('/quizquestionanswer', QuizQuestionAnswerHandler),
+	                                      ('/quizend', QuizEndHandler),
+	                                      ('/startquiz', StartQuizHandler),
 	                                      ('/testquestions', TestQuestionsHandler)],
 										 debug=True)
 	util.run_wsgi_app(application)
