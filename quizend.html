@@ -1,0 +1,17 @@
+<h1>End of Quiz</h1>
+
+<table>
+	<tbody>
+		{% for qsa in results %}
+			<tr>
+				<td>Question {{ forloop.counter }}</td>
+				<td>{{ qsa.answer }}</td>
+				{% if qsa.correct %}
+					<td>Correct</td>
+				{% else %}
+					<td>Wrong</td>
+				{% endif %}
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

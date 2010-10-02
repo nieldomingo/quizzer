@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<title>Quiz</title>
+		<script type="text/javascript" src="javascripts/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="javascripts/quiz.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css" />
+	</head>
+	<body>
+		<h1>{{ quiz.title }}</h1>
+		<div class="controls">
+			<input type="button" name="start" value="Start"/>
+		</div>
+		<h2 id="questiontitle"></h2>
+		<div id="quizcontent">
+		</div>
+		{% for key in quiz.questions %}
+			<input type="hidden" name="question{{ forloop.counter }}" value="{{ key }}" />
+		{% endfor %}
+		<input type="hidden" name="quizkey" value="{{ quiz.key }}" />
+	</body>
+</html>
