@@ -1,0 +1,30 @@
+<table class="quizstats">
+	<thead>
+		<th></th>
+		<th>Date Time</th>
+		<th>Quizzer</th>
+		<th>Score (%)</th>
+	</thead>
+	<tbody>
+		{% for session in sessions %}
+		<tr>
+			<td>
+				<input type="checkbox" name="{{ session.key }}" value="{{ session.key }}"/>
+			</td>
+			<td>
+				{{ session.datetime }}
+			</td>
+			<td>
+				{{ session.quizzer.nickname}}
+			</td>
+			<td>
+				{% if session.completed %}
+					{{ session.percentscore}}
+				{% else %}
+					incomplete
+				{% endif %}
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
