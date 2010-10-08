@@ -6,16 +6,27 @@
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css" />
 	</head>
 	<body>
-		<h1>{{ quiz.title }}</h1>
-		<div class="controls">
-			<input type="button" name="start" value="Start"/>
+		<div id="header">
 		</div>
-		<h2 id="questiontitle"></h2>
-		<div id="quizcontent">
+		<div id="sidebar">
 		</div>
-		{% for key in quiz.questions %}
-			<input type="hidden" name="question{{ forloop.counter }}" value="{{ key }}" />
-		{% endfor %}
-		<input type="hidden" name="quizkey" value="{{ quiz.key }}" />
+		<div id="main">
+			<div id="maincontent">
+				<div class="maincontenttop">
+					<div>{{ quiz.title }}</div>
+					<div class="controls">
+						<input type="button" name="start" value="Start"/>
+					</div>
+				</div>
+				<div id="quizcontent">
+				</div>
+				<div id="quizresult" style="display: none;">
+				</div>
+				{% for key in quiz.questions %}
+						<input type="hidden" name="question{{ forloop.counter }}" value="{{ key }}" />
+				{% endfor %}
+				<input type="hidden" name="quizkey" value="{{ quiz.key }}" />
+			</div>
+		</div>
 	</body>
 </html>

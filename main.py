@@ -28,38 +28,10 @@ import random
 import datetime
 import math
 
+from models import *
+
 CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
 QUESTIONSPERQUIZ = 5
-
-class Question(db.Model):
-	author = db.UserProperty(auto_current_user_add=True)
-	questiontype = db.IntegerProperty()
-	question = db.TextProperty()
-	answer = db.StringProperty()
-	datetime = db.DateTimeProperty(auto_now_add=True)
-	category = db.IntegerProperty()
-	
-class Quiz(db.Model):
-	title = db.StringProperty()
-	quiztype = db.IntegerProperty()
-	quizzer = db.UserProperty()
-	author = db.UserProperty(auto_current_user_add=True)
-	datetime = db.DateTimeProperty(auto_now_add=True)
-	questions = db.ListProperty(db.Key)
-	completed = db.BooleanProperty(default=False)
-	
-class QuizSession(db.Model):
-	quiz = db.ReferenceProperty(Quiz)
-	datetime = db.DateTimeProperty(auto_now_add=True)
-	quizzer = db.UserProperty(auto_current_user_add=True)
-	answers = db.ListProperty(db.Key)
-	completed = db.BooleanProperty(default=False)
-
-class QuizSessionAnswer(db.Model):
-	quizzer = db.UserProperty(auto_current_user_add=True)
-	answer = db.StringProperty()
-	correct = db.BooleanProperty(default=False)
-	duration = db.IntegerProperty()
 
 class MainHandler(webapp.RequestHandler):
 	def get(self):
@@ -243,10 +215,14 @@ class QuizQuestionAnswerHandler(webapp.RequestHandler):
 		sessionkey = self.request.get('sessionkey')
 		quizsession = db.get(db.Key(sessionkey))
 		
+		duration = self.request.get('duration')
 		answer = self.request.get('answer')
+		
 		if question.questiontype == 1:
 			qsa = QuizSessionAnswer()
 			qsa.answer = answer
+			qsa.duration = int(duration)
+			qsa.question = question
 			try:
 				error = math.fabs((float(question.answer) - float(answer)) / float(question.answer))
 				if error < 0.01:
@@ -262,6 +238,8 @@ class QuizQuestionAnswerHandler(webapp.RequestHandler):
 			qsa.put()
 			quizsession.answers.append(qsa.key())
 			quizsession.put()
+			
+			db.run_in_transaction(increment_timesanswered, question.key())
 				
 class QuizEndHandler(webapp.RequestHandler):
 	def post(self):
@@ -273,10 +251,24 @@ class QuizEndHandler(webapp.RequestHandler):
 		
 		quizsession.completed = True
 		
+		numcorrect = 0
+		totalduration = 0
+		
 		results = []
 		for index, key in enumerate(quizsession.answers):
 			qsa = db.get(key)
 			results.append(qsa)
+			if qsa.correct:
+				numcorrect += 1
+			totalduration += qsa.duration
+				
+		quizsession.percentscore = numcorrect * 100 / len(results)
+		quizsession.duration = totalduration
+		
+		quiz.completed = True
+		
+		quizsession.put()
+		quiz.put()
 		
 		path = os.path.join(os.path.dirname(__file__), 'quizend.html')
 		self.response.out.write(template.render(path, dict(results=results)))
@@ -295,6 +287,31 @@ class StartQuizHandler(webapp.RequestHandler):
 		
 		self.response.headers['Content-Type'] = 'text/json'
 		self.response.out.write(json.dumps(dict(sessionkey=sessionkey)))
+		
+class QuizStatisticsHandler(webapp.RequestHandler):
+	def post(self):
+		key_name = self.request.get('quizkey')
+		quiz = db.get(db.Key(key_name))
+		
+		sessions = quiz.quizsession_set
+		#for session in sessions:
+		#	session.datestr = session.datetime.strftime("%d/%m/%Y %H:%M:%s")
+		
+		path = os.path.join(os.path.dirname(__file__), 'quizstats.html')
+		self.response.out.write(template.render(path, dict(sessions=sessions)))
+
+class QuizResultViewHandler(webapp.RequestHandler):
+	def post(self):
+		key_name = self.request.get('quizsession')
+		quizsession = db.get(db.Key(key_name))
+		
+		results = []
+		for index, key in enumerate(quizsession.answers):
+			qsa = db.get(key)
+			results.append(qsa)
+		
+		path = os.path.join(os.path.dirname(__file__), 'quizresult.html')
+		self.response.out.write(template.render(path, dict(results=results)))
 
 class TestQuestionsHandler(webapp.RequestHandler):
 	def get(self):
@@ -322,6 +339,8 @@ def main():
 	                                      ('/quizquestionanswer', QuizQuestionAnswerHandler),
 	                                      ('/quizend', QuizEndHandler),
 	                                      ('/startquiz', StartQuizHandler),
+	                                      ('/quizstats', QuizStatisticsHandler),
+	                                      ('/quizresult', QuizResultViewHandler),
 	                                      ('/testquestions', TestQuestionsHandler)],
 										 debug=True)
 	util.run_wsgi_app(application)

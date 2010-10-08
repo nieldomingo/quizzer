@@ -7,6 +7,12 @@ class Question(db.Model):
 	answer = db.StringProperty()
 	datetime = db.DateTimeProperty(auto_now_add=True)
 	category = db.IntegerProperty()
+	timesanswered = db.IntegerProperty(default=0)
+	
+def increment_timesanswered(key):
+	q = db.get(key)
+	q.timesanswered += 1
+	q.put()
 	
 class Quiz(db.Model):
 	title = db.StringProperty()
@@ -24,9 +30,11 @@ class QuizSession(db.Model):
 	answers = db.ListProperty(db.Key)
 	completed = db.BooleanProperty(default=False)
 	percentscore = db.IntegerProperty()
+	duration = db.IntegerProperty()
 
 class QuizSessionAnswer(db.Model):
 	quizzer = db.UserProperty(auto_current_user_add=True)
 	answer = db.StringProperty()
 	correct = db.BooleanProperty(default=False)
 	duration = db.IntegerProperty()
+	question = db.ReferenceProperty(Question)
