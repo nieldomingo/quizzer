@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>User Management</title>
+	</head>
+	<body>
+		<h1>Users Management</h1>
+		<p>
+			<a href="./adduser">Add User</a>
+		</p>
+		<table>
+			<thead>
+				<th>Full Name</th>
+				<th>E-mail</th>
+				<th>Type</th>
+				<th>Edit</th>
+				<th>Delete</th>
+			</thead>
+			<tbody>
+				{% for user in users %}
+					<tr>
+						<td>{{ user.fullname }}</td>
+						<td>{{ user.email }}</td>
+						<td>{{ user.type}}</td>
+						<td><a href="./edituser?key={{ user.key }}">Edit</a></td>
+						<td><a href="./deleteuser?key={{ user.key }}">Delete</a></td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</body>
+</html>

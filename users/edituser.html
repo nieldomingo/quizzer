@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>Edit User</title>
+	</head>
+	<body>
+		<h1>Edit User</h1>
+		<form name="edituser" method="POST" action="./edituser">
+			<p>
+				Full Name: <input type="text" name="fullname" value="{{ user.fullname }}" />
+			</p>
+			<p>
+				Type:
+				<select name="usertype">
+					{% for usertype in usertypes %}
+						{% ifequal user.usertype usertype.0 %}
+							<option value="{{ usertype.0 }}" selected="true">{{ usertype.1 }}</option>
+						{% else %}
+							<option value="{{ usertype.0 }}">{{ usertype.1 }}</option>
+						{% endifequal %}
+					{% endfor %}
+				</select>
+			</p>
+			<p>
+				<input type="hidden" name="key" value="{{ user.key }}" />
+				<input type="submit" name="submit" value="Submit" />
+				<input type="reset" name="reset" value="Reset" />
+			</p>
+		</form>
+	</body>
+</html>

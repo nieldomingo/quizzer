@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>Add User</title>
+	</head>
+	<body>
+		<h1>Add User</h1>
+		<form name="adduser" method="POST" action="./adduser">
+			<p>
+				Full Name: <input type="text" name="fullname" value="" />
+			</p>
+			<p>
+				Email: <input type="text" name="email" value="" />
+			</p>
+			<p>
+				Type:
+				<select name="usertype">
+					<option value="3">Quizzer</option>
+					<option value="2">Trainer</option>
+					<option value="1">Encoder</option>
+				</select>
+			</p>
+			<p>
+				<input type="submit" name="submit" value="Submit" />
+			</p>
+		</form>
+	</body>
+</html>
