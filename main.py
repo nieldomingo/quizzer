@@ -21,7 +21,8 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import users
 
 import os
-import json
+#import json
+from django.utils import simplejson as json
 import cgi
 import urllib
 import random
@@ -29,11 +30,13 @@ import datetime
 import math
 
 from models import *
+from users import requireusertype
 
 CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
 QUESTIONSPERQUIZ = 5
 
 class MainHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer', 'Encoder', 'Trainer')
 	def get(self):
 		self.response.out.write('Hello world!')
 		
@@ -293,7 +296,7 @@ class QuizStatisticsHandler(webapp.RequestHandler):
 		key_name = self.request.get('quizkey')
 		quiz = db.get(db.Key(key_name))
 		
-		sessions = quiz.quizsession_set
+		sessions = quiz.quizsession_set.order('-datetime')
 		#for session in sessions:
 		#	session.datestr = session.datetime.strftime("%d/%m/%Y %H:%M:%s")
 		

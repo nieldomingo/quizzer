@@ -15,3 +15,9 @@ indexes:
   - name: quizzer
   - name: datetime
     direction: desc
+
+- kind: QuizSession
+  properties:
+  - name: quiz
+  - name: datetime
+    direction: desc

@@ -48,7 +48,9 @@ $(document).ready(function() {
 			var key = keys[questionindex];
 			starttimer();
 			$("#quizcontent").load('/quizquestionview', {'key': key}, function () {
+				$("#questioncounter").html((questionindex + 1) + '/' + keys.length);
 				$("input[name='submit']").click( function () {
+					var that = $(this).busy({'img': '/images/busy.gif'});
 					stoptimer();
 					var answer = $("input[name='answer']").val();
 					
@@ -62,6 +64,7 @@ $(document).ready(function() {
 								alert("answer is wrong");
 							}*/
 							questionindex += 1;
+							that.busy("hide");
 							LoadQuestion(sessionkey);
 							
 					});

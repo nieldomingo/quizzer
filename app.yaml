@@ -1,4 +1,4 @@
-application: ceat-quizzer
+application: ceatquizzers
 version: 1
 runtime: python
 api_version: 1
@@ -9,6 +9,13 @@ handlers:
   
 - url: /javascripts
   static_dir: javascripts
+  
+- url: /images
+  static_dir: images
+
+- url: /users/.*
+  script: users/users.py
+  login: admin
 
 - url: .*
   script: main.py
