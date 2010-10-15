@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Questions{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="javascripts/manage_questions.js"></script>
+{% endblock %}
+
+{% block sidebar %}
+<input type="button" name="addquestion"  value="Add Question"/>
+{% endblock %}
+
+{% block main %}
+			<div id="maincontent">
+				<div id="questionslist">
+				</div>
+				<div id="questionview">
+					<input type="button" name="closequestion" value="Close Question View" />
+					<input type="button" name="editquestion" value="Edit Question" />
+					<div id="questionviewcontent">
+					</div>
+				</div>
+				<div id="editquestion">
+					<div id="editquestioncontent">
+					</div>
+				</div>
+			</div>
+{% endblock %}

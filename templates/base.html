@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>{% block title %}Title{% endblock %}</title>
+		<script type="text/javascript" src="javascripts/jquery-1.4.2.min.js"></script>
+		{% block javascript %}
+		{% endblock %}
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css" />
+	</head>
+	<body>
+		<div id="header">
+			{% block header %}{% endblock %}
+		</div>
+		<div id="sidebar">
+			{% block sidebar %}
+			{% endblock %}
+		</div>
+		<div id="main">
+			{% block main %}
+			{% endblock %}
+		</div>
+	</body>
+</html>
