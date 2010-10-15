@@ -48,17 +48,27 @@ def requireusertype(*args, **kw):
 				query.filter('user =', user)
 				suser = query.fetch(1)
 				if not suser:
-					self.response.out.write('Unauthorized: You are not registered as a user of this site.')
+					path = os.path.join(os.path.dirname(__file__), 'unauthorized.html')
+					self.response.out.write(template.render(path, dict(message='You are not registered as a user of this site.')))
 				else:
 					usertypeslist = [USERTYPES2CODE[o] for o in usertypes] 
 					if suser[0].usertype in usertypeslist:
 						function(*args, **kw)
 					else:
-						self.response.out.write("Unauthorized: You don't have enough privileges to access this part of the site")
+						path = os.path.join(os.path.dirname(__file__), 'unauthorized.html')
+						self.response.out.write(template.render(path, dict(message="You don't have enough privileges to access this part of the site")))
 						
 		return __requireusertype
 		
 	return _requireusertype
+	
+def getUserType():
+	user = users.get_current_user()
+	query = Users.all()
+	query.filter('user =', user)
+	suser = query.fetch(1)
+	
+	return USERTYPES[suser[0].usertype]
 
 class MainUsersHandler(webapp.RequestHandler):
     def get(self):
@@ -122,6 +132,10 @@ class DeleteUserHandler(webapp.RequestHandler):
     	user.delete()
     	
     	self.redirect('./')
+    	
+class LogoutHandler(webapp.RequestHandler):
+	def get(self):
+		self.redirect(users.create_logout_url('/'))
 
 def main():
 	application = webapp.WSGIApplication([('/users/', MainUsersHandler),

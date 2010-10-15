@@ -1,23 +1,20 @@
-<html>
-	<head>
-		<title>Manage Quizzes</title>
-		<script type="text/javascript" src="javascripts/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="javascripts/myquizzes.js"></script>
-		<link rel="stylesheet" type="text/css" href="stylesheets/main.css" />
-	</head>
-	<body>
-		<div id="header">
-		</div>
-		<div id="sidebar">
-			<input type="button" name="generatequiz"  value="Generate Quiz"/>
-		</div>
-		<div id="main">
+{% extends "base.html" %}
+
+{% block title %}Manage Quizzes{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="javascripts/myquizzes.js"></script>
+{% endblock %}
+
+{% block sidebar %}
+<input type="button" name="generatequiz"  value="Generate Quiz"/>
+{% endblock %}
+
+{% block main %}
 			<div id="maincontent">
 				<div id="generatequizform">
 				</div>
 				<div id="quizlist">
 				</div>
 			</div>
-		</div>
-	</body>
-</html>
+{% endblock %}

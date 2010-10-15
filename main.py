@@ -31,6 +31,7 @@ import math
 
 from models import *
 from users import requireusertype
+from users import getUserType
 
 CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
 QUESTIONSPERQUIZ = 5
@@ -38,12 +39,23 @@ QUESTIONSPERQUIZ = 5
 class MainHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer', 'Encoder', 'Trainer')
 	def get(self):
-		self.response.out.write('Hello world!')
+		usertype = getUserType()
+		if usertype == 'Quizzer':
+			self.redirect('/myquizzes')
+		elif usertype == 'Encoder':
+			self.redirect('/managequestions')
+		elif usertype == 'Trainer':
+			self.redirect('/managequestions')
+		
+class LogoutHandler(webapp.RequestHandler):
+	def get(self):
+		self.redirect(users.create_logout_url('/'))
 		
 class ManageQuestionHandler(webapp.RequestHandler):
 	@requireusertype('Encoder', 'Trainer')
 	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'templates/manage_questions.html')
+		#path = os.path.join(os.path.dirname(__file__), 'templates/manage_questions.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/managequestions.html')
 		self.response.out.write(template.render(path, {}))
 
 class SaveQuestionHandler(webapp.RequestHandler):
@@ -342,6 +354,7 @@ class TestQuestionsHandler(webapp.RequestHandler):
 
 def main():
 	application = webapp.WSGIApplication([('/', MainHandler),
+	                                      ('/logout', LogoutHandler),
 	                                      ('/managequestions', ManageQuestionHandler),
 	                                      ('/savequestion', SaveQuestionHandler),
 	                                      ('/getquestions', GetQuestionsHandler),
