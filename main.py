@@ -43,7 +43,7 @@ class MainHandler(webapp.RequestHandler):
 class ManageQuestionHandler(webapp.RequestHandler):
 	@requireusertype('Encoder', 'Trainer')
 	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'manage_questions.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/manage_questions.html')
 		self.response.out.write(template.render(path, {}))
 
 class SaveQuestionHandler(webapp.RequestHandler):
@@ -109,7 +109,7 @@ class GetQuestionsHandler(webapp.RequestHandler):
 			prev=True
 		else:
 			prev=False
-		path = os.path.join(os.path.dirname(__file__), 'questionslist.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/questionslist.html')
 		if newoffset < totalcount:
 			self.response.out.write(template.render(path, dict(questions=qlist, offset=newoffset, prev=prev, next=True)))
 		else:
@@ -122,7 +122,7 @@ class QuestionViewHandler(webapp.RequestHandler):
 		question = db.get(db.Key(key_name))
 		
 		category = dict(CATEGORIES)[question.category]
-		path = os.path.join(os.path.dirname(__file__), 'questionview.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/questionview.html')
 		self.response.out.write(template.render(path, dict(question=question, category=category)))
 		
 class EditQuestionHandler(webapp.RequestHandler):
@@ -130,12 +130,12 @@ class EditQuestionHandler(webapp.RequestHandler):
 	def post(self):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
-		path = os.path.join(os.path.dirname(__file__), 'editquestion.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/editquestion.html')
 		self.response.out.write(template.render(path, dict(question=question, categories=CATEGORIES)))
 	
 	@requireusertype('Encoder', 'Trainer')		
 	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'editquestion.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/editquestion.html')
 		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
 		
 class DeleteQuestionsHandler(webapp.RequestHandler):
@@ -149,13 +149,13 @@ class DeleteQuestionsHandler(webapp.RequestHandler):
 class MyQuizzesHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer')
 	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'myquizzes.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/myquizzes.html')
 		self.response.out.write(template.render(path, {}))
 
 class GenerateQuizFormHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer')
 	def get(self):
-		path = os.path.join(os.path.dirname(__file__), 'generatequizform.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/generatequizform.html')
 		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
 		
 class GenerateQuizHandler(webapp.RequestHandler):
@@ -198,7 +198,7 @@ class ListQuizHandler(webapp.RequestHandler):
 		for q in query:
 			quizzes.append(dict(title=q.title, completed=q.completed, key=q.key(), author=q.author.nickname()))
 			
-		path = os.path.join(os.path.dirname(__file__), 'listquiz.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/listquiz.html')
 		self.response.out.write(template.render(path, dict(quizzes=quizzes)))
 
 class QuizHandler(webapp.RequestHandler):
@@ -207,7 +207,7 @@ class QuizHandler(webapp.RequestHandler):
 		key_name = self.request.get('key')
 		quiz = db.get(db.Key(key_name))
 		
-		path = os.path.join(os.path.dirname(__file__), 'quiz.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/quiz.html')
 		self.response.out.write(template.render(path, dict(quiz=quiz)))
 		
 class QuizQuestionViewHandler(webapp.RequestHandler):
@@ -216,7 +216,7 @@ class QuizQuestionViewHandler(webapp.RequestHandler):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
 		
-		path = os.path.join(os.path.dirname(__file__), 'quizquestionview.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/quizquestionview.html')
 		self.response.out.write(template.render(path, dict(question=question)))
 		
 class QuizQuestionAnswerHandler(webapp.RequestHandler):
@@ -284,7 +284,7 @@ class QuizEndHandler(webapp.RequestHandler):
 		quizsession.put()
 		quiz.put()
 		
-		path = os.path.join(os.path.dirname(__file__), 'quizend.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/quizend.html')
 		self.response.out.write(template.render(path, dict(results=results)))
 		
 class StartQuizHandler(webapp.RequestHandler):
@@ -313,7 +313,7 @@ class QuizStatisticsHandler(webapp.RequestHandler):
 		#for session in sessions:
 		#	session.datestr = session.datetime.strftime("%d/%m/%Y %H:%M:%s")
 		
-		path = os.path.join(os.path.dirname(__file__), 'quizstats.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/quizstats.html')
 		self.response.out.write(template.render(path, dict(sessions=sessions)))
 
 class QuizResultViewHandler(webapp.RequestHandler):
@@ -327,7 +327,7 @@ class QuizResultViewHandler(webapp.RequestHandler):
 			qsa = db.get(key)
 			results.append(qsa)
 		
-		path = os.path.join(os.path.dirname(__file__), 'quizresult.html')
+		path = os.path.join(os.path.dirname(__file__), 'templates/quizresult.html')
 		self.response.out.write(template.render(path, dict(results=results)))
 
 class TestQuestionsHandler(webapp.RequestHandler):
