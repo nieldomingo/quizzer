@@ -41,11 +41,13 @@ class MainHandler(webapp.RequestHandler):
 		self.response.out.write('Hello world!')
 		
 class ManageQuestionHandler(webapp.RequestHandler):
+	@requireusertype('Encoder', 'Trainer')
 	def get(self):
 		path = os.path.join(os.path.dirname(__file__), 'manage_questions.html')
 		self.response.out.write(template.render(path, {}))
 
 class SaveQuestionHandler(webapp.RequestHandler):
+	@requireusertype('Encoder', 'Trainer')
 	def get(self):
 		category = self.request.get('questioncategory')
 		questiontype = self.request.get('questiontype')
@@ -75,6 +77,7 @@ class SaveQuestionHandler(webapp.RequestHandler):
 				self.response.out.write(json.dumps(dict(result="not saved")))
 
 class GetQuestionsHandler(webapp.RequestHandler):
+	@requireusertype('Encoder', 'Trainer')
 	def post(self):
 		questions = Question.all()
 		
@@ -113,6 +116,7 @@ class GetQuestionsHandler(webapp.RequestHandler):
 			self.response.out.write(template.render(path, dict(questions=qlist, offset=newoffset, prev=prev, next=False)))
 
 class QuestionViewHandler(webapp.RequestHandler):
+	@requireusertype('Encoder', 'Trainer')
 	def post(self):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
@@ -122,17 +126,20 @@ class QuestionViewHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(question=question, category=category)))
 		
 class EditQuestionHandler(webapp.RequestHandler):
+	@requireusertype('Encoder', 'Trainer')
 	def post(self):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
 		path = os.path.join(os.path.dirname(__file__), 'editquestion.html')
 		self.response.out.write(template.render(path, dict(question=question, categories=CATEGORIES)))
-			
+	
+	@requireusertype('Encoder', 'Trainer')		
 	def get(self):
 		path = os.path.join(os.path.dirname(__file__), 'editquestion.html')
 		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
 		
 class DeleteQuestionsHandler(webapp.RequestHandler):
+	@requireusertype('Encoder', 'Trainer')
 	def post(self):
 		keys = self.request.get('keys')
 		for key_name in keys.split(','):
@@ -140,20 +147,19 @@ class DeleteQuestionsHandler(webapp.RequestHandler):
 			question.delete();
 			
 class MyQuizzesHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def get(self):
-		user = users.get_current_user()
-		if not user:
-			self.redirect(users.create_login_url(self.request.uri))
-		else:
-			path = os.path.join(os.path.dirname(__file__), 'myquizzes.html')
-			self.response.out.write(template.render(path, {}))
+		path = os.path.join(os.path.dirname(__file__), 'myquizzes.html')
+		self.response.out.write(template.render(path, {}))
 
 class GenerateQuizFormHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def get(self):
 		path = os.path.join(os.path.dirname(__file__), 'generatequizform.html')
 		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
 		
 class GenerateQuizHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def get(self):
 		category = self.request.get('category')
 		user = users.get_current_user()
@@ -181,6 +187,7 @@ class GenerateQuizHandler(webapp.RequestHandler):
 		self.response.out.write("%s"%totalcount)
 		
 class ListQuizHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def get(self):
 		user = users.get_current_user()
 		
@@ -195,6 +202,7 @@ class ListQuizHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(quizzes=quizzes)))
 
 class QuizHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def get(self):
 		key_name = self.request.get('key')
 		quiz = db.get(db.Key(key_name))
@@ -203,6 +211,7 @@ class QuizHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(quiz=quiz)))
 		
 class QuizQuestionViewHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def post(self):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
@@ -211,6 +220,7 @@ class QuizQuestionViewHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(question=question)))
 		
 class QuizQuestionAnswerHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def get(self):
 		key_name = self.request.get('key')
 		question = db.get(db.Key(key_name))
@@ -245,6 +255,7 @@ class QuizQuestionAnswerHandler(webapp.RequestHandler):
 			db.run_in_transaction(increment_timesanswered, question.key())
 				
 class QuizEndHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def post(self):
 		key_name = self.request.get('quizkey')
 		quiz = db.get(db.Key(key_name))
@@ -277,6 +288,7 @@ class QuizEndHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(results=results)))
 		
 class StartQuizHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def get(self):
 		key_name = self.request.get('quizkey')
 		quiz = db.get(db.Key(key_name))
@@ -292,6 +304,7 @@ class StartQuizHandler(webapp.RequestHandler):
 		self.response.out.write(json.dumps(dict(sessionkey=sessionkey)))
 		
 class QuizStatisticsHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def post(self):
 		key_name = self.request.get('quizkey')
 		quiz = db.get(db.Key(key_name))
@@ -304,6 +317,7 @@ class QuizStatisticsHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(sessions=sessions)))
 
 class QuizResultViewHandler(webapp.RequestHandler):
+	@requireusertype('Quizzer')
 	def post(self):
 		key_name = self.request.get('quizsession')
 		quizsession = db.get(db.Key(key_name))
@@ -317,6 +331,7 @@ class QuizResultViewHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(results=results)))
 
 class TestQuestionsHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def get(self):
 		question = "Lorem ipsum est ad kasd meliore, at vim facilis eloquentiam, ex est elit utamur dissentiet. Ne usu tollit laoreet, fabulas posidonium duo no. Cum quaeque consequuntur at. Qui ei eius interesset. Novum consectetuer vel eu, has admodum inciderint te."
 		answer = "100"
