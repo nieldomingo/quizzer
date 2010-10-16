@@ -7,6 +7,8 @@
 <script type="text/javascript" src="javascripts/quiz.js"></script>
 {% endblock %}
 
+{% block username %}{{ email }}{% endblock %}
+
 {% block sidebar %}
 {% endblock %}
 
@@ -14,10 +16,15 @@
 			<div id="maincontent">
 				<div class="maincontenttop">
 					<div>{{ quiz.title }}</div>
+					{% if disabledanswer %}
+					<a href="javascript:history.back(1);">Back to Quizzes</a>
+					{% else %}
 					<div class="controls">
 						<input type="button" name="start" value="Start"/>
 					</div>
 					<a href="/myquizzes">Back to Quizzes</a>
+					{% endif %}
+					
 				</div>
 				<div id="quizcontent">
 				</div>

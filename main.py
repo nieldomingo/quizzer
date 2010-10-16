@@ -32,6 +32,8 @@ import math
 from models import *
 from users import requireusertype
 from users import getUserType
+from users import getQuizzers
+from chart import piechart
 
 CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
 QUESTIONSPERQUIZ = 5
@@ -45,7 +47,7 @@ class MainHandler(webapp.RequestHandler):
 		elif usertype == 'Encoder':
 			self.redirect('/managequestions')
 		elif usertype == 'Trainer':
-			self.redirect('/managequestions')
+			self.redirect('/trainer')
 		
 class LogoutHandler(webapp.RequestHandler):
 	def get(self):
@@ -54,9 +56,10 @@ class LogoutHandler(webapp.RequestHandler):
 class ManageQuestionHandler(webapp.RequestHandler):
 	@requireusertype('Encoder', 'Trainer')
 	def get(self):
+		user = users.get_current_user()
 		#path = os.path.join(os.path.dirname(__file__), 'templates/manage_questions.html')
 		path = os.path.join(os.path.dirname(__file__), 'templates/managequestions.html')
-		self.response.out.write(template.render(path, {}))
+		self.response.out.write(template.render(path, dict(email=user.email(), usertype=getUserType())))
 
 class SaveQuestionHandler(webapp.RequestHandler):
 	@requireusertype('Encoder', 'Trainer')
@@ -161,8 +164,9 @@ class DeleteQuestionsHandler(webapp.RequestHandler):
 class MyQuizzesHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer')
 	def get(self):
+		user = users.get_current_user()
 		path = os.path.join(os.path.dirname(__file__), 'templates/myquizzes.html')
-		self.response.out.write(template.render(path, {}))
+		self.response.out.write(template.render(path, dict(email=user.email())))
 
 class GenerateQuizFormHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer')
@@ -199,9 +203,13 @@ class GenerateQuizHandler(webapp.RequestHandler):
 		self.response.out.write("%s"%totalcount)
 		
 class ListQuizHandler(webapp.RequestHandler):
-	@requireusertype('Quizzer')
+	@requireusertype('Quizzer', 'Trainer')
 	def get(self):
-		user = users.get_current_user()
+		quizzerkey = self.request.get('quizzerkey')
+		if quizzerkey:
+			user = db.get(db.Key(quizzerkey)).user
+		else:
+			user = users.get_current_user()
 		
 		query = Quiz.all()
 		query.filter('quizzer =', user)
@@ -212,15 +220,22 @@ class ListQuizHandler(webapp.RequestHandler):
 			
 		path = os.path.join(os.path.dirname(__file__), 'templates/listquiz.html')
 		self.response.out.write(template.render(path, dict(quizzes=quizzes)))
+		
+	def post(self):
+		self.get()
 
 class QuizHandler(webapp.RequestHandler):
-	@requireusertype('Quizzer')
+	@requireusertype('Quizzer', 'Trainer')
 	def get(self):
 		key_name = self.request.get('key')
 		quiz = db.get(db.Key(key_name))
 		
+		user = users.get_current_user()
+		
+		disabledanswer = self.request.get('disabledanswer')
+		
 		path = os.path.join(os.path.dirname(__file__), 'templates/quiz.html')
-		self.response.out.write(template.render(path, dict(quiz=quiz)))
+		self.response.out.write(template.render(path, dict(quiz=quiz, disabledanswer=disabledanswer, email=user.email())))
 		
 class QuizQuestionViewHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer')
@@ -296,8 +311,12 @@ class QuizEndHandler(webapp.RequestHandler):
 		quizsession.put()
 		quiz.put()
 		
+		numwrong = QUESTIONSPERQUIZ - numcorrect
+		
+		src = piechart(data=[numcorrect, numwrong], labels=['Correct', 'Wrong'])
+		
 		path = os.path.join(os.path.dirname(__file__), 'templates/quizend.html')
-		self.response.out.write(template.render(path, dict(results=results)))
+		self.response.out.write(template.render(path, dict(results=results, src=src)))
 		
 class StartQuizHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer')
@@ -316,7 +335,7 @@ class StartQuizHandler(webapp.RequestHandler):
 		self.response.out.write(json.dumps(dict(sessionkey=sessionkey)))
 		
 class QuizStatisticsHandler(webapp.RequestHandler):
-	@requireusertype('Quizzer')
+	@requireusertype('Quizzer', 'Trainer')
 	def post(self):
 		key_name = self.request.get('quizkey')
 		quiz = db.get(db.Key(key_name))
@@ -329,18 +348,46 @@ class QuizStatisticsHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(sessions=sessions)))
 
 class QuizResultViewHandler(webapp.RequestHandler):
-	@requireusertype('Quizzer')
+	@requireusertype('Quizzer', 'Trainer')
 	def post(self):
 		key_name = self.request.get('quizsession')
 		quizsession = db.get(db.Key(key_name))
 		
 		results = []
+		numcorrect = 0
 		for index, key in enumerate(quizsession.answers):
 			qsa = db.get(key)
 			results.append(qsa)
+			if qsa.correct:
+				numcorrect += 1
+				
+		numwrong = QUESTIONSPERQUIZ - numcorrect
+		
+		src = piechart(data=[numcorrect, numwrong], labels=['Correct', 'Wrong'])
 		
 		path = os.path.join(os.path.dirname(__file__), 'templates/quizresult.html')
-		self.response.out.write(template.render(path, dict(results=results)))
+		self.response.out.write(template.render(path, dict(results=results, src=src)))
+		
+class TrainerPageHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
+	def get(self):
+		user = users.get_current_user()
+		path = os.path.join(os.path.dirname(__file__), 'templates/trainer.html')
+		self.response.out.write(template.render(path, dict(email=user.email())))
+		
+class ViewQuizzerHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
+	def get(self):
+		user = users.get_current_user()
+		path = os.path.join(os.path.dirname(__file__), 'templates/viewquizzer.html')
+		self.response.out.write(template.render(path, dict(email=user.email())))
+		
+class SelectQuizzerHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
+	def post(self):
+		quizzers = getQuizzers()
+		path = os.path.join(os.path.dirname(__file__), 'templates/selectquizzer.html')
+		self.response.out.write(template.render(path, dict(quizzers=quizzers)))
 
 class TestQuestionsHandler(webapp.RequestHandler):
 	@requireusertype('Trainer')
@@ -372,6 +419,9 @@ def main():
 	                                      ('/startquiz', StartQuizHandler),
 	                                      ('/quizstats', QuizStatisticsHandler),
 	                                      ('/quizresult', QuizResultViewHandler),
+	                                      ('/trainer', TrainerPageHandler),
+	                                      ('/viewquizzer', ViewQuizzerHandler),
+	                                      ('/selectquizzer', SelectQuizzerHandler),
 	                                      ('/testquestions', TestQuestionsHandler)],
 										 debug=True)
 	util.run_wsgi_app(application)

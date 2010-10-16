@@ -31,7 +31,7 @@ body {
 	padding: 10px;
 }
 
-.questionrow, .quizrow, .resultrow {
+.questionrow, .quizrow, .resultrow, .quizzerrow {
 	/*background-color: #EDF0F9;*/
 	border-top: 1px solid #CCCCCC;
 	border-bottom: 1px solid #CCCCCC;
@@ -42,13 +42,17 @@ body {
 	background-color: #EDF0F9;
 }
 
-#questionslistcontent table, #quizlistcontent table, table#quizstats {
+#questionslistcontent table,
+#quizlistcontent table,
+table#quizstats,
+#quizzerlist {
 	border-collapse: collapse;
 	border-spacing: 0;
 	font-size: 14px;
 	width: 100%;
 }
 
-table#quizstats th {
+table#quizstats th,
+#quizzerlist th {
 	text-align: left;
 }

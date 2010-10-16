@@ -21,3 +21,8 @@ indexes:
   - name: quiz
   - name: datetime
     direction: desc
+
+- kind: Users
+  properties:
+  - name: usertype
+  - name: fullname

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}View Quizzer{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="javascripts/viewquizzer.js"></script>
+{% endblock %}
+
+{% block username %}{{ email }}{% endblock %}
+
+{% block sidebar %}
+<div>
+	<a href="/trainer">Home</a>
+</div>
+<div>
+	<a href="#" id="selectquizzer">Select Quizzer</a>
+</div>
+{% endblock %}
+
+{% block main %}
+<div id="maincontent">
+	<div>
+		Current Quizzer: <span id="currentquizzer"></span>
+		<input type='hidden' name="quizzerkey"  value="" />
+	</div>
+	<div id="maincontentcontent">
+	</div>
+</div>
+{% endblock %}

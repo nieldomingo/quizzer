@@ -69,6 +69,13 @@ def getUserType():
 	suser = query.fetch(1)
 	
 	return USERTYPES[suser[0].usertype]
+	
+def getQuizzers():
+	query = Users.all()
+	query.filter('usertype =', USERTYPES2CODE['Quizzer'])
+	query.order('fullname')
+	
+	return query
 
 class MainUsersHandler(webapp.RequestHandler):
     def get(self):
