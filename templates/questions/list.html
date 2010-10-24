@@ -1,0 +1,26 @@
+<div class="pagination">
+	<input type="hidden" name="listcursor" value="{{ cursor }}" />
+	<input type="hidden" name="prevcursors" value="{{ prevcursors }}" />
+	{% if not disableprevious %}
+	<a href="#" id="previouspage"><< Previous</a>
+	{% endif %}
+	{% if not disablenext %}
+	<a href="#" id="nextpage">Next >></a>
+	{% endif %}
+</div>
+<table>
+	<thead>
+		<th>Type</th>
+		<th>Category</th>
+		<th>Question</th>
+	</thead>
+	<tbody>
+		{% for q in questions %}
+		<tr title="{{ q.key }}">
+			<td>{{ q.questiontype }}</td>
+			<td>{{ q.category }}</td>
+			<td>{{ q.question }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>

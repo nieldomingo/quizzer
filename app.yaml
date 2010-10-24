@@ -1,7 +1,10 @@
 application: ceatquizzers
-version: 1
+version: 2
 runtime: python
 api_version: 1
+
+builtins:
+- datastore_admin: on
 
 handlers:
 - url: /stylesheets
@@ -16,6 +19,12 @@ handlers:
 - url: /users/.*
   script: users/users.py
   login: admin
+  
+- url: /questions/.*
+  script: questions.py
+  
+- url: /quizzer/.*
+  script: quizzer.py
 
 - url: .*
   script: main.py

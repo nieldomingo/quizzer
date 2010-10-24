@@ -3,56 +3,74 @@ body {
 	font-size: 14px;
 }
 
-.overquestionrow {
-	/*background-color: #ADDFFF;*/
-	cursor: pointer;
-}
-
 #sidebar {
-	width: 100px;
+	width: 200px;
 	float: left;
 }
 
 #main {
-	margin-left: 150px;
+	margin-left: 250px;
 }
 
 #header {
 	height: 100px;
 }
 
-#maincontent {
-	border: 5px solid #BBCCFF;
-	border-right: none;
+#list {
+	min-height: 400px;
 }
 
-.maincontenttop {
-	background-color: #E3E9FF;
-	padding: 10px;
-}
-
-.questionrow, .quizrow, .resultrow, .quizzerrow {
-	/*background-color: #EDF0F9;*/
-	border-top: 1px solid #CCCCCC;
-	border-bottom: 1px solid #CCCCCC;
-	cursor: pointer;
-}
-
-.completed {
-	background-color: #EDF0F9;
-}
-
-#questionslistcontent table,
-#quizlistcontent table,
-table#quizstats,
-#quizzerlist {
+#list table {
 	border-collapse: collapse;
 	border-spacing: 0;
 	font-size: 14px;
 	width: 100%;
 }
 
-table#quizstats th,
-#quizzerlist th {
-	text-align: left;
+#list table tr {
+	border-top: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	cursor: pointer;
+}
+
+#list table tr.answered {
+	background-color: #EDF0F9;
+}
+
+#list table td {
+	padding-right: 10px;
+}
+
+#buttons, #controls {
+	margin-bottom: 1em;
+}
+
+.field .label {
+	color: #2E6E9E;
+	margin: 1em 0;
+}
+
+.ui-widget {
+	font-size: 1em;
+}
+
+/* stylings for category selector */
+
+#sidebar h3 {
+	font-size: 14px;
+}
+
+#categoryselector {
+	padding: 0;
+}
+#categoryselector li {
+	display: block;
+	padding: 5px;
+	border: 1px solid #CCCCCC;
+	margin-bottom: 2px;
+	cursor: pointer;
+}
+
+#categoryselector li.selected {
+	background-color: #DFEFFC;
 }

@@ -1,0 +1,97 @@
+{% extends "../base.html" %}
+
+{% block title %}Quizzer Home{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="/javascripts/quizzer.js"></script>
+{% endblock %}
+
+{% block main %}
+<div id="controls">
+	<input name="currentfilter" value="all" type='hidden'/>
+	<form>
+	<input type="button" name="request" value="Request Questions"/>
+	<span id="answeredfilter">
+		<input type="radio" id="allradio" name="answeredfilter" checked="checked" value="all"/><label for="allradio">All</label>
+		<input type="radio" id="answeredradio" name="answeredfilter" value="answered"/><label for="answeredradio">Answered</label>
+		<input type="radio" id="unansweredradio" name="answeredfilter" value="unanswered"/><label for="unansweredradio">Unanswered</label>
+		<input type="radio" id="correctradio" name="answeredfilter" value="correct"/><label for="correctradio">Correct</label>
+		<input type="radio" id="wrongradio" name="answeredfilter" value="wrong"/><label for="wrongradio">Wrong</label>
+	</span>
+	</form>
+</div>
+<div id="list">
+</div>
+<div id="dialog-answer-result" title="Answer Question Result">
+	<div id="result-message">
+	</div>
+</div>
+<div id="dialog-question-details" title="Question Details">
+	<input type="hidden" name="key" value="" />
+	<div id="answerhistory">
+	</div>
+</div>
+<div id="dialog-answer-question" title="Answer Question">
+	<input type="hidden" name="questionkey" value="" />
+	<input type="hidden" name="sessionkey" value="" />
+	<div class="field">
+		<div class="label">
+			Elapsed Time
+		</div>
+		<div class="value">
+			<span id="elapsedtime">0s</span>
+		</div>
+	</div>
+	<div class="field">
+		<div class="label">
+			Question
+		</div>
+		<div class="value">
+			<span id="questionvalue"></span>
+		</div>
+	</div>
+	<div class="field">
+		<div class="label">
+			Answer
+		</div>
+		<div class="widget">
+			<input type="text" name="answer" value="" />
+		</div>
+	</div>
+</div>
+<div id="dialog-quizzer-request" title="Request Questions">
+	<form>
+		<fieldset>
+			<div class="field">
+				<div class="label">
+					<label for="category">Category</label>
+				</div>
+				<div class="widget">
+					<select name="category">
+						{% for cat in categories%}
+						<option value="{{cat.0}}">{{ cat.1 }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<h3>Categories</h3>
+<input type="hidden" name="currentcategory" value="0">
+<ul id="categoryselector">
+	<li class="selected" value="0">All</li>
+	{% for cat in categories %}
+	<li value="{{ cat.0 }}">{{ cat.1}}</li>
+	{% endfor %}
+</ul>
+<!--
+<h3>Search</h3>
+<div>
+<input type="text" name="search" /><input type="button" name="searchgo" value="Go" />
+</div>
+-->
+{% endblock %}

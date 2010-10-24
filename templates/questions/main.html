@@ -1,0 +1,130 @@
+{% extends "../base.html" %}
+
+{% block title %}Manage Questions{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="/javascripts/questions.js"></script>
+{% endblock %}
+
+{% block main %}
+<div id="buttons">
+	<input name="add" value="Add Question" type="button"/>
+</div>
+<div id="list">
+</div>
+
+<div id="dialog-question-form" title="Add Question">
+	<form>
+		<input name="key" value="" type="hidden" />
+		<fieldset>
+			<div class="field">
+				<div class="label">
+					<label for="category">Category</label>
+				</div>
+				<div class="widget">
+					<select name="category">
+						{% for cat in categories%}
+						<option value="{{cat.0}}">{{ cat.1 }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			<div class="field">
+				<div class="label">
+					<label for="type">Type</label>
+				</div>
+				<div class="widget">
+					<select name="type">
+						<option value="1">Numerical Answer</option>
+					</select>
+				</div>
+			</div>
+			<div class="field">
+				<div class="label">
+					<label for="question">Question</label>
+				</div>
+				<div class="widget">
+					<textarea name="question" cols="50" rows="5"></textarea>
+				</div>
+			</div>
+			<div class="field">
+				<div class="label">
+					<label for="answer">Answer</label>
+				</div>
+				<div class="widget">
+					<input name="answer" type="text"/>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+<div id="dialog-question-view" title="View Question">
+	<div class="field">
+		<div class="label">
+			Category
+		</div>
+		<div class="value">
+			<span id="categoryvalue"></span>
+		</div>
+	</div>
+	<div class="field">
+		<div class="label">
+			Type
+		</div>
+		<div class="value">
+			<span id="typevalue"></span>
+		</div>
+	</div>
+	<div class="field">
+		<div class="label">
+			Question
+		</div>
+		<div class="value">
+			<span id="questionvalue"></span>
+		</div>
+	</div>
+	<div class="field">
+		<div class="label">
+			Answer
+		</div>
+		<div class="value">
+			<span id="answervalue"></span>
+		</div>
+	</div>
+</div>
+
+<div id="dialog-question-required-message" title="Error">
+	<p>
+	All fields are required!
+	</p>
+</div>
+
+<div id="dialog-question-invalid-answer-message" title="Error">
+	<p>
+	Invalid answer!
+	</p>
+</div>
+
+<div id="dialog-question-not-saved-message" title="Error">
+	<p>
+	Question not saved!
+	</p>
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+<h3>Categories</h3>
+<input type="hidden" name="currentcategory" value="0">
+<ul id="categoryselector">
+	<li class="selected" value="0">All</li>
+	{% for cat in categories %}
+	<li value="{{ cat.0 }}">{{ cat.1}}</li>
+	{% endfor %}
+</ul>
+<h3>Search</h3>
+<div>
+<input type="text" name="search" /><input type="button" name="searchgo" value="Go" />
+</div>
+{% endblock %}

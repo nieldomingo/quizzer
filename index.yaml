@@ -10,6 +10,154 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Question
+  properties:
+  - name: __searchable_text_index_question
+  - name: category
+  - name: datetime
+    direction: desc
+
+- kind: Question
+  properties:
+  - name: __searchable_text_index_question
+  - name: datetime
+    direction: desc
+
+- kind: Question
+  properties:
+  - name: category
+  - name: datetime
+
+- kind: Question
+  properties:
+  - name: category
+  - name: datetime
+    direction: desc
+
+- kind: Question
+  properties:
+  - name: category=
+  - name: datetime
+
+- kind: QuestionIndex
+  properties:
+  - name: category
+  - name: datetime
+    direction: desc
+
+- kind: QuestionIndex
+  properties:
+  - name: category
+  - name: quizzers
+  - name: datetime
+    direction: desc
+
+- kind: QuestionIndex
+  properties:
+  - name: quizzers
+  - name: datetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: answeredcorrectly
+  - name: category
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: answeredcorrectly
+  - name: category
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: answeredcorrectly
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: answeredcorrectly
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: category
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: category
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answered
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answeredcorrectly
+  - name: category
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answeredcorrectly
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answeredcorrectly
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: category
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: category
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
+- kind: QuestionQuizzerStats
+  properties:
+  - name: quizzer
+  - name: questiondatetime
+    direction: desc
+
 - kind: Quiz
   properties:
   - name: quizzer
