@@ -3,6 +3,8 @@ $(document).ready(function() {
 	$("input[name='add']").button();
 	//$("input[name='searchgo']").button();
 	
+	$("#question-form-tab").tabs();
+	
 	$("#dialog-question-required-message").dialog({
 		modal: true,
 		autoOpen: false,
@@ -93,9 +95,11 @@ $(document).ready(function() {
 			// fill in the values of the view question dialog
 			$("#categoryvalue").text(data['categoryname']);
 			$("#typevalue").text(data['typename']);
-			$("#questionvalue").text(data['question']);
+			//$("#questionvalue").text(data['question']);
+			$("#questionvalue").html(Wiky.toHtml(data['question']));
 			$("#answervalue").text(data['answer']);
 			
+			//AMprocessNode($("#questionvalue")[0]);
 			// fill in the values of the edit question dialog
 			
 			$("#dialog-question-form").attr('title', 'Edit Question');
@@ -105,7 +109,11 @@ $(document).ready(function() {
 			$("#dialog-question-form input[name='answer']").val(data['answer']);
 			$("#dialog-question-form input[name='key']").val(data['key']);
 			
+			$("#questionpreview").html(Wiky.toHtml(data['question']));
+			//AMprocessNode($("#questionpreview")[0]);
+			
 			$.loading(false);
+			$("#question-form-tab").tabs("select", 0);
 			$("#dialog-question-view").dialog("open");
 		});
 	};
@@ -191,6 +199,9 @@ $(document).ready(function() {
 		$("#dialog-question-form textarea[name='question']").val('');
 		$("#dialog-question-form input[name='answer']").val('');
 		$("#dialog-question-form input[name='key']").val('');
+		$("#questionpreview").html('');
+		
+		$("#question-form-tab").tabs("select", 0);
 		$("#dialog-question-form" ).dialog("open");
 	});
 	
@@ -211,6 +222,17 @@ $(document).ready(function() {
 			LoadQuestions(category, false, searchstring);
 		}
 	})
+	
+	$("input[name='updatepreview']").click( function () {
+		var val = $("#dialog-question-form textarea[name='question']").val();
+		//$("#questionpreview").text(val);
+		$("#questionpreview").html(Wiky.toHtml(val));
+		//AMprocessNode($("#questionpreview")[0]);
+	});
+	
+	$("input[name='editdiagram']").click( function () {
+		$.mask(true, {maskCss: {zIndex: 20000}});
+	});
 	
 	LoadQuestions(0);
 	

@@ -271,11 +271,11 @@ class RequestQuestions(webapp.RequestHandler):
 			markerdate = resultlist[0].questiondatetime
 			
 			query = Question.all()
-			query.filter("category =", int(category)).filter("datetime >", markerdate).order("datetime")
+			query.filter("active =", True).filter("category =", int(category)).filter("datetime >", markerdate).order("datetime")
 			
 		else:
 			query = Question.all()
-			query.filter("category =", int(category)).order("datetime")
+			query.filter("active =", True).filter("category =", int(category)).order("datetime")
 		
 		cnt = 0
 		for question in query.fetch(20):

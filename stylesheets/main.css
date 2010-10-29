@@ -54,6 +54,13 @@ body {
 	font-size: 1em;
 }
 
+#questionpreview {
+	height: 210px;
+	padding: 5px;
+	overflow: auto;
+	border: 1px solid #A6C9E2;
+}
+
 /* stylings for category selector */
 
 #sidebar h3 {
@@ -74,3 +81,9 @@ body {
 #categoryselector li.selected {
 	background-color: #DFEFFC;
 }
+
+#question-form-tab {
+	height: 500px;
+}
+
+

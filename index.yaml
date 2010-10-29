@@ -25,6 +25,12 @@ indexes:
 
 - kind: Question
   properties:
+  - name: active
+  - name: category
+  - name: datetime
+
+- kind: Question
+  properties:
   - name: category
   - name: datetime
 

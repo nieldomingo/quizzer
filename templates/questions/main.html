@@ -3,6 +3,7 @@
 {% block title %}Manage Questions{% endblock %}
 
 {% block javascript %}
+<!--<script type="text/javascript" src="/javascripts/ASCIIMathML.js"></script>-->
 <script type="text/javascript" src="/javascripts/questions.js"></script>
 {% endblock %}
 
@@ -17,42 +18,68 @@
 	<form>
 		<input name="key" value="" type="hidden" />
 		<fieldset>
-			<div class="field">
-				<div class="label">
-					<label for="category">Category</label>
+			<div id="question-form-tab">
+				<ul>
+					<li><a href="#question-form-tab-1">Details</a></li>
+					<li><a href="#question-form-tab-2">Question</a></li>
+					<li><a href="#question-form-tab-3">Diagram</a></li>
+					<li><a href="#question-form-tab-4">Answer</a></li>
+				</ul>
+				<div id="question-form-tab-1">
+					<div class="field">
+						<div class="label">
+							<label for="category">Category</label>
+						</div>
+						<div class="widget">
+							<select name="category">
+								{% for cat in categories%}
+								<option value="{{cat.0}}">{{ cat.1 }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">
+							<label for="type">Type</label>
+						</div>
+						<div class="widget">
+							<select name="type">
+								<option value="1">Numerical Answer</option>
+							</select>
+						</div>
+					</div>
 				</div>
-				<div class="widget">
-					<select name="category">
-						{% for cat in categories%}
-						<option value="{{cat.0}}">{{ cat.1 }}</option>
-						{% endfor %}
-					</select>
+				<div id="question-form-tab-2">
+					<div class="field">
+						<div class="label">
+							<label for="question">Question</label>
+						</div>
+						<div class="widget">
+							<textarea name="question" cols="50" rows="5"></textarea>
+							<input type="button" name="updatepreview" value="Update Preview" />
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">
+							Question Preview
+						</div>
+						<div class="value">
+							<div id="questionpreview"></div>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="field">
-				<div class="label">
-					<label for="type">Type</label>
+				<div id="question-form-tab-3">
+					<input type="button" name="editdiagram" value="Edit Diagram" />
 				</div>
-				<div class="widget">
-					<select name="type">
-						<option value="1">Numerical Answer</option>
-					</select>
-				</div>
-			</div>
-			<div class="field">
-				<div class="label">
-					<label for="question">Question</label>
-				</div>
-				<div class="widget">
-					<textarea name="question" cols="50" rows="5"></textarea>
-				</div>
-			</div>
-			<div class="field">
-				<div class="label">
-					<label for="answer">Answer</label>
-				</div>
-				<div class="widget">
-					<input name="answer" type="text"/>
+				<div id="question-form-tab-4">
+					<div class="field">
+						<div class="label">
+							<label for="answer">Answer</label>
+						</div>
+						<div class="widget">
+							<input name="answer" type="text"/>
+						</div>
+					</div>
 				</div>
 			</div>
 		</fieldset>

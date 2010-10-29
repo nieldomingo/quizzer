@@ -47,7 +47,7 @@ $(document).ready(function() {
 					$.loading(false);
 					$("#dialog-answer-question input[name='questionkey']").val(data['questionkey']);
 					$("#dialog-answer-question input[name='sessionkey']").val(data['sessionkey']);
-					$("#dialog-answer-question #questionvalue").text(data['question']);
+					$("#dialog-answer-question #questionvalue").html(Wiky.toHtml(data['question']));
 					$("#dialog-answer-question input[name='answer']").val('');
 					$("#dialog-answer-question").dialog("open");
 					starttimer();
