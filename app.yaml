@@ -15,6 +15,12 @@ handlers:
   
 - url: /images
   static_dir: images
+  
+- url: /questions/svg-edit
+  static_dir: svg-edit
+  
+- url: /svg-edit
+  static_dir: svg-edit
 
 - url: /users/.*
   script: users/users.py

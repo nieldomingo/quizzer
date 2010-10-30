@@ -16,6 +16,7 @@ class Question(search.SearchableModel):
 	#author = db.UserProperty(auto_current_user_add=True) # for removal
 	questiontype = db.IntegerProperty(default=1)
 	question = db.TextProperty()
+	diagram = db.TextProperty()
 	answer = db.StringProperty()
 	datetime = db.DateTimeProperty(auto_now_add=True)
 	category = db.IntegerProperty()

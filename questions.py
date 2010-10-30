@@ -18,6 +18,7 @@ import time
 class MainHandler(webapp.RequestHandler):
 	@requireusertype('Trainer', 'Encoder')
 	def get(self):
+		#self.response.headers['Content-Type'] = 'application/xhtml+xml'
 		path = os.path.join(os.path.dirname(__file__), 'templates/questions/main.html')
 		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
     	
@@ -29,15 +30,21 @@ class Save(webapp.RequestHandler):
 		questiontext = self.request.get('question')
 		answer = self.request.get('answer')
 		key = self.request.get('key')
+		diagram = self.request.get('diagram')
 		
 		if not key:
-			question = Question(category=int(category), questiontype=int(qtype), question=questiontext, answer=answer)
+			if diagram:
+				question = Question(category=int(category), questiontype=int(qtype), question=questiontext, answer=answer, diagram=diagram)
+			else:
+				question = Question(category=int(category), questiontype=int(qtype), question=questiontext, answer=answer)
 		else:
 			question = db.get(db.Key(key))
 			question.questiontype = int(qtype)
 			question.question = questiontext
 			question.answer = answer
 			question.category = int(category)
+			if diagram:
+				question.diagram = diagram
 			
 		self.response.headers['Content-Type'] = 'text/json'
 		try:	
@@ -45,6 +52,9 @@ class Save(webapp.RequestHandler):
 			self.response.out.write(json.dumps(dict(result="saved")))
 		except db.NotSavedError:
 			self.response.out.write(json.dumps(dict(result="not saved")))
+			
+	def post(self):
+		self.get();
 			
 class QList(webapp.RequestHandler):
 	@requireusertype('Trainer', 'Encoder')
@@ -169,6 +179,10 @@ class QuestionDetail(webapp.RequestHandler):
 				d['question'] = question.question
 				d['answer'] = question.answer
 				d['datetime'] = question.datetime.isoformat()
+				if question.diagram:
+					d['diagram'] = question.diagram
+				else:
+					d['diagram'] = ''
 				d['key'] = key
 				
 				self.response.out.write(json.dumps(d))

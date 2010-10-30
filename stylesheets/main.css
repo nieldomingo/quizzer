@@ -86,4 +86,21 @@ body {
 	height: 500px;
 }
 
+iframe[name='svg-edit'] {
+	width: 600;
+	height: 500;
+}
 
+#form-diagram-view {
+	width: 300px;
+	height: 300px;
+}
+
+/*
+#svg-edit-div {
+	position: absolute;
+	z-index: 20001;
+	left: 0;
+	top: 0;
+	display: none;
+}*/

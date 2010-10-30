@@ -46,6 +46,7 @@ $(document).ready(function() {
 				var question = $("#dialog-question-form textarea[name='question']").val();
 				var answer = $("#dialog-question-form input[name='answer']").val();
 				var key = $("#dialog-question-form input[name='key']").val();
+				var diagram = $("#dialog-question-form input[name='diagram']").val();
 								
 				// check if there are empty fields
 				if (!question || !answer) {
@@ -63,10 +64,14 @@ $(document).ready(function() {
 								
 				$.loading(true, {align: 'center'});
 				
-				if (key)
-					$.getJSON('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'key': key}, SaveQuestionResult);
-				else
-					$.getJSON('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer}, SaveQuestionResult);
+				if (key){
+					//$.getJSON('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'key': key, 'diagram': diagram}, SaveQuestionResult);
+					$.post('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'key': key, 'diagram': diagram}, SaveQuestionResult, 'json');
+				}
+				else {
+					//$.getJSON('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'diagram': diagram}, SaveQuestionResult);
+					$.post('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'diagram': diagram}, SaveQuestionResult, 'json');
+				}
 			},
 			'Cancel': function () {
 				$(this).dialog("close");
@@ -89,6 +94,23 @@ $(document).ready(function() {
 		}
 	});
 	
+	$("#dialog-svg-edit").dialog({
+		modal: true,
+		autoOpen: false,
+		width: 640,
+		buttons: {
+			'Ok': function () {
+				var s = window.frames['svg-edit'].svgCanvas.getSvgString();
+				$("#dialog-question-form input[name='diagram']").val(s);
+				$("#form-diagram-view").html(s);
+				$(this).dialog("close");
+			},
+			'Cancel': function () {
+				$(this).dialog("close");
+			},
+		}
+	});
+	
 	var ViewQuestion = function (key) {
 		$.loading(true, {align: 'center'});
 		$.getJSON('/questions/detail', {'key': key}, function (data) {
@@ -107,6 +129,8 @@ $(document).ready(function() {
 			$("#dialog-question-form select[name='type']").val(data['type']);
 			$("#dialog-question-form textarea[name='question']").val(data['question']);
 			$("#dialog-question-form input[name='answer']").val(data['answer']);
+			$("#dialog-question-form input[name='diagram']").val(data['diagram']);
+			$("#form-diagram-view").html(data['diagram']);
 			$("#dialog-question-form input[name='key']").val(data['key']);
 			
 			$("#questionpreview").html(Wiky.toHtml(data['question']));
@@ -231,9 +255,32 @@ $(document).ready(function() {
 	});
 	
 	$("input[name='editdiagram']").click( function () {
-		$.mask(true, {maskCss: {zIndex: 20000}});
+		//$.mask(true, {maskCss: {zIndex: 20000}});
+		//$("#svg-edit-div").show();
+		var s = $("#dialog-question-form input[name='diagram']").val();
+		
+		if (s) {
+			$("iframe[name='svg-edit']").load(function () {
+				window.frames['svg-edit'].svgCanvas.setSvgString(s);
+			});
+		}
+		$("#dialog-svg-edit").dialog("open");
 	});
 	
 	LoadQuestions(0);
+	
+	//var svgCanvas = new embedded_svg_edit(window.frames['svg-edit']);
+	var s = '\
+			<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">\
+			 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->\
+			 <g>\
+			  <title>Layer 1</title>\
+			  <ellipse ry="61" rx="54" id="svg_1" cy="153" cx="147" stroke-width="5" stroke="#000000" fill="#FF0000"/>\
+			 </g>\
+			</svg>';
+	//svgCanvas.setSvgString(s);
+	//$("iframe[name='svg-edit']").load(function () {
+	//	window.frames['svg-edit'].svgCanvas.setSvgString(s);
+	//});
 	
 });

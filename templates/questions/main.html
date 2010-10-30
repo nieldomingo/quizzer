@@ -3,7 +3,7 @@
 {% block title %}Manage Questions{% endblock %}
 
 {% block javascript %}
-<!--<script type="text/javascript" src="/javascripts/ASCIIMathML.js"></script>-->
+<!--<script type="text/javascript" src="/javascripts/embedapi.js"></script>-->
 <script type="text/javascript" src="/javascripts/questions.js"></script>
 {% endblock %}
 
@@ -70,6 +70,9 @@
 				</div>
 				<div id="question-form-tab-3">
 					<input type="button" name="editdiagram" value="Edit Diagram" />
+					<input type="hidden" name="diagram" value="" />
+					<div id="form-diagram-view">
+					</div>
 				</div>
 				<div id="question-form-tab-4">
 					<div class="field">
@@ -138,7 +141,12 @@
 	Question not saved!
 	</p>
 </div>
-
+<div id="dialog-svg-edit" title="Edit Diagram">
+	<div id="svg-edit-div">
+		<iframe name="svg-edit" src="/svg-edit/svg-editor.html?dimensions=300,300&canvas_expansion=0&show_outside_canvas=false&no_save_warning=true&iconsize=m">
+		</iframe>
+	</div>
+</div>
 {% endblock %}
 
 {% block sidebar %}
