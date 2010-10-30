@@ -265,6 +265,9 @@ $(document).ready(function() {
 			$("iframe[name='svg-edit']").load(function () {
 				//window.frames['svg-edit'].svgCanvas.setSvgString(s);
 				window.frames[0].svgCanvas.setSvgString(s);
+				setTimeout(function () {
+					window.frames[0].svgCanvas.setSvgString(s);
+				}, 1000);
 			});
 		}
 		else {
