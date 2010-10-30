@@ -49,6 +49,7 @@ $(document).ready(function() {
 					$("#dialog-answer-question input[name='sessionkey']").val(data['sessionkey']);
 					$("#dialog-answer-question #questionvalue").html(Wiky.toHtml(data['question']));
 					$("#dialog-answer-question input[name='answer']").val('');
+					$("#question-diagram").html(data['diagram']);
 					$("#dialog-answer-question").dialog("open");
 					starttimer();
 				});

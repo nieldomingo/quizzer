@@ -116,6 +116,15 @@
 	</div>
 	<div class="field">
 		<div class="label">
+			Diagram
+		</div>
+		<div class="value">
+			<div id="diagram-view">
+			</div>
+		</div>
+	</div>
+	<div class="field">
+		<div class="label">
 			Answer
 		</div>
 		<div class="value">
@@ -143,7 +152,7 @@
 </div>
 <div id="dialog-svg-edit" title="Edit Diagram">
 	<div id="svg-edit-div">
-		<iframe name="svg-edit" src="/svg-edit/svg-editor.html?dimensions=300,300&canvas_expansion=0&show_outside_canvas=false&no_save_warning=true&iconsize=m">
+		<iframe name="svg-edit" src="/svg-edit/svg-editor.html?dimensions=300,300&amp;canvas_expansion=0&amp;show_outside_canvas=false&amp;no_save_warning=true&amp;iconsize=m">
 		</iframe>
 	</div>
 </div>
@@ -151,7 +160,7 @@
 
 {% block sidebar %}
 <h3>Categories</h3>
-<input type="hidden" name="currentcategory" value="0">
+<input type="hidden" name="currentcategory" value="0" />
 <ul id="categoryselector">
 	<li class="selected" value="0">All</li>
 	{% for cat in categories %}

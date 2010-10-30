@@ -48,6 +48,8 @@
 		</div>
 		<div class="value">
 			<span id="questionvalue"></span>
+			<div id="question-diagram">
+			</div>
 		</div>
 	</div>
 	<div class="field">
@@ -81,7 +83,7 @@
 
 {% block sidebar %}
 <h3>Categories</h3>
-<input type="hidden" name="currentcategory" value="0">
+<input type="hidden" name="currentcategory" value="0" />
 <ul id="categoryselector">
 	<li class="selected" value="0">All</li>
 	{% for cat in categories %}

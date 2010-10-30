@@ -100,7 +100,8 @@ $(document).ready(function() {
 		width: 640,
 		buttons: {
 			'Ok': function () {
-				var s = window.frames['svg-edit'].svgCanvas.getSvgString();
+				//var s = window.frames['svg-edit'].svgCanvas.getSvgString();
+				var s = window.frames[0].svgCanvas.getSvgString();
 				$("#dialog-question-form input[name='diagram']").val(s);
 				$("#form-diagram-view").html(s);
 				$(this).dialog("close");
@@ -120,6 +121,7 @@ $(document).ready(function() {
 			//$("#questionvalue").text(data['question']);
 			$("#questionvalue").html(Wiky.toHtml(data['question']));
 			$("#answervalue").text(data['answer']);
+			$("#diagram-view").html(data['diagram']);
 			
 			//AMprocessNode($("#questionvalue")[0]);
 			// fill in the values of the edit question dialog
@@ -222,6 +224,8 @@ $(document).ready(function() {
 		$("#dialog-question-form select[name='type']").val('1');
 		$("#dialog-question-form textarea[name='question']").val('');
 		$("#dialog-question-form input[name='answer']").val('');
+		$("#dialog-question-form input[name='diagram']").val('');
+		$("#form-diagram-view").html('');
 		$("#dialog-question-form input[name='key']").val('');
 		$("#questionpreview").html('');
 		
@@ -255,13 +259,26 @@ $(document).ready(function() {
 	});
 	
 	$("input[name='editdiagram']").click( function () {
-		//$.mask(true, {maskCss: {zIndex: 20000}});
-		//$("#svg-edit-div").show();
 		var s = $("#dialog-question-form input[name='diagram']").val();
 		
 		if (s) {
 			$("iframe[name='svg-edit']").load(function () {
-				window.frames['svg-edit'].svgCanvas.setSvgString(s);
+				//window.frames['svg-edit'].svgCanvas.setSvgString(s);
+				window.frames[0].svgCanvas.setSvgString(s);
+			});
+		}
+		else {
+			$("iframe[name='svg-edit']").load(function () {
+				//window.frames['svg-edit'].svgCanvas.setSvgString(s);
+				var initsvg = '\
+								<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">\
+								 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->\
+								 <g>\
+								  <title>Layer 1</title>\
+								 </g>\
+								</svg>\
+								';
+				window.frames[0].svgCanvas.setSvgString(initsvg);
 			});
 		}
 		$("#dialog-svg-edit").dialog("open");

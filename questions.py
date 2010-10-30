@@ -18,7 +18,7 @@ import time
 class MainHandler(webapp.RequestHandler):
 	@requireusertype('Trainer', 'Encoder')
 	def get(self):
-		#self.response.headers['Content-Type'] = 'application/xhtml+xml'
+		self.response.headers['Content-Type'] = 'application/xhtml+xml'
 		path = os.path.join(os.path.dirname(__file__), 'templates/questions/main.html')
 		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
     	
@@ -81,7 +81,7 @@ class QList(webapp.RequestHandler):
 			prevcursors.append(cursor)
 		
 		qlist = []
-		questionslist = questions.fetch(50)
+		questionslist = questions.fetch(25)
 		for q in questionslist:
 			d = {}
 			d['key'] = q.key()
@@ -99,7 +99,7 @@ class QList(webapp.RequestHandler):
 			qlist.append(d)
 		
 		disablenext = False
-		if len(questionslist) < 50:
+		if len(questionslist) < 25:
 			disablenext = True
 		
 		cursor = questions.cursor()
@@ -134,7 +134,7 @@ class QPrevList(webapp.RequestHandler):
 			disableprevious = True
 		
 		qlist = []
-		questionslist = questions.fetch(50)
+		questionslist = questions.fetch(25)
 		for q in questionslist:
 			d = {}
 			d['key'] = q.key()

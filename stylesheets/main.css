@@ -87,8 +87,8 @@ body {
 }
 
 iframe[name='svg-edit'] {
-	width: 600;
-	height: 500;
+	width: 600px;
+	height: 500px;
 }
 
 #form-diagram-view {
