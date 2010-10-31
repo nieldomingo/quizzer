@@ -295,6 +295,8 @@ $(document).ready(function() {
 		}*/
 		
 		$("iframe[name='svg-edit']").load(function () {
+			var s = $("#dialog-question-form input[name='diagram']").val();
+			
 			window.svgCanvas = new embedded_svg_edit($("iframe[name='svg-edit']")[0]);
 			//$("iframe[name='svg-edit']").contents().find("#main_button").hide();
 			if (s) {
