@@ -101,10 +101,18 @@ $(document).ready(function() {
 		buttons: {
 			'Ok': function () {
 				//var s = window.frames['svg-edit'].svgCanvas.getSvgString();
+				/*
 				var s = window.frames[0].svgCanvas.getSvgString();
 				$("#dialog-question-form input[name='diagram']").val(s);
 				$("#form-diagram-view").html(s);
 				$(this).dialog("close");
+				*/
+				
+				window.svgCanvas.getSvgString()(function (data, error) {
+					$("#dialog-question-form input[name='diagram']").val(data);
+					$("#form-diagram-view").html(data);
+					$("#dialog-svg-edit").dialog("close");
+				});
 			},
 			'Cancel': function () {
 				$(this).dialog("close");
@@ -261,6 +269,7 @@ $(document).ready(function() {
 	$("input[name='editdiagram']").click( function () {
 		var s = $("#dialog-question-form input[name='diagram']").val();
 		
+		/*
 		if (s) {
 			$("iframe[name='svg-edit']").load(function () {
 				//window.frames['svg-edit'].svgCanvas.setSvgString(s);
@@ -283,7 +292,30 @@ $(document).ready(function() {
 								';
 				window.frames[0].svgCanvas.setSvgString(initsvg);
 			});
-		}
+		}*/
+		
+		$("iframe[name='svg-edit']").load(function () {
+			window.svgCanvas = new embedded_svg_edit($("iframe[name='svg-edit']")[0]);
+			//$("iframe[name='svg-edit']").contents().find("#main_button").hide();
+			if (s) {
+				window.svgCanvas.setSvgString(s);
+				setTimeout(function () {
+					window.svgCanvas.setSvgString(s);
+				}, 1000);
+			}
+			else {
+				var initsvg = '\
+								<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">\
+								 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->\
+								 <g>\
+								  <title>Layer 1</title>\
+								 </g>\
+								</svg>\
+								';
+				window.svgCanvas.setSvgString(initsvg);
+			}
+		});
+		
 		$("#dialog-svg-edit").dialog("open");
 	});
 	

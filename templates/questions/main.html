@@ -3,7 +3,7 @@
 {% block title %}Manage Questions{% endblock %}
 
 {% block javascript %}
-<!--<script type="text/javascript" src="/javascripts/embedapi.js"></script>-->
+<script type="text/javascript" src="/javascripts/embedapi.js"></script>
 <script type="text/javascript" src="/javascripts/questions.js"></script>
 {% endblock %}
 
@@ -152,7 +152,9 @@
 </div>
 <div id="dialog-svg-edit" title="Edit Diagram">
 	<div id="svg-edit-div">
-		<iframe name="svg-edit" src="/svg-edit/svg-editor.html?dimensions=300,300&amp;canvas_expansion=0&amp;show_outside_canvas=false&amp;no_save_warning=true&amp;iconsize=m">
+		<!--<iframe name="svg-edit" src="/svg-edit/svg-editor.html?dimensions=300,300&amp;canvas_expansion=0&amp;show_outside_canvas=false&amp;no_save_warning=true&amp;iconsize=m">
+		</iframe>-->
+		<iframe name="svg-edit" src="http://svg-edit.googlecode.com/svn-history/r1771/trunk/editor/svg-editor.html?dimensions=300,300&amp;canvas_expansion=0&amp;show_outside_canvas=false&amp;no_save_warning=true&amp;iconsize=m">
 		</iframe>
 	</div>
 </div>
