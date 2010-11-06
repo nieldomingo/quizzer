@@ -1,4 +1,5 @@
 CATEGORIES = [(1, 'Math'), (2, 'Engineering Science'), (3, 'Electrical Engineering')]
+QUESTIONTYPES = [(1, 'Numerical Answer'), (2, 'Multiple Choice')]
 
 QUESTIONSPERQUIZ = 5
 

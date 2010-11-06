@@ -47,17 +47,27 @@ $(document).ready(function() {
 				var answer = $("#dialog-question-form input[name='answer']").val();
 				var key = $("#dialog-question-form input[name='key']").val();
 				var diagram = $("#dialog-question-form input[name='diagram']").val();
-								
-				// check if there are empty fields
-				if (!question || !answer) {
-					$("#dialog-question-required-message").dialog("open");
-					return;
-				}
 				
-				// check if a valid numerical answer was provided
 				if (qtype == '1') {
+					// check if there are empty fields
+					if (!question || !answer) {
+						$("#dialog-question-required-message").dialog("open");
+						return;
+					}
+					
+					// check if a valid numerical answer was provided
 					if (answer.search(/(^-*\d+$)|(^-*\d+\.\d+$)/) == -1) {
 						$("#dialog-question-invalid-answer-message").dialog("open");
+						return;
+					}
+				}
+				else if (qtype == '2') {
+					var choice1 = $("#dialog-question-form input[name='choice1']").val();
+					var choice2 = $("#dialog-question-form input[name='choice2']").val();
+					var choice3 = $("#dialog-question-form input[name='choice3']").val();
+					
+					if (!question || !answer || !choice1 || !choice2 || !choice3) {
+						$("#dialog-question-required-message").dialog("open");
 						return;
 					}
 				}
@@ -65,12 +75,53 @@ $(document).ready(function() {
 				$.loading(true, {align: 'center'});
 				
 				if (key){
-					//$.getJSON('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'key': key, 'diagram': diagram}, SaveQuestionResult);
-					$.post('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'key': key, 'diagram': diagram}, SaveQuestionResult, 'json');
+					if (qtype == '1') {
+						$.post('/questions/save',
+							{'category': category,
+							'qtype': qtype,
+							'question': question,
+							'answer': answer,
+							'key': key,
+							'diagram': diagram},
+							SaveQuestionResult, 'json');
+					}
+					else if (qtype == '2') {
+						$.post('/questions/save',
+							{'category': category,
+							'qtype': qtype,
+							'question': question,
+							'answer': answer,
+							'choice1': choice1,
+							'choice2': choice2,
+							'choice3': choice3,
+							'key': key,
+							'diagram': diagram},
+							SaveQuestionResult, 'json');
+					}
 				}
 				else {
-					//$.getJSON('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'diagram': diagram}, SaveQuestionResult);
-					$.post('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'diagram': diagram}, SaveQuestionResult, 'json');
+					//$.post('/questions/save', {'category': category, 'qtype': qtype, 'question': question, 'answer': answer, 'diagram': diagram}, SaveQuestionResult, 'json');
+					if (qtype == '1') {
+						$.post('/questions/save',
+							{'category': category,
+							'qtype': qtype,
+							'question': question,
+							'answer': answer,
+							'diagram': diagram},
+							SaveQuestionResult, 'json');
+					}
+					else if (qtype == '2') {
+						$.post('/questions/save',
+							{'category': category,
+							'qtype': qtype,
+							'question': question,
+							'answer': answer,
+							'choice1': choice1,
+							'choice2': choice2,
+							'choice3': choice3,
+							'diagram': diagram},
+							SaveQuestionResult, 'json');
+					}
 				}
 			},
 			'Cancel': function () {
@@ -131,6 +182,16 @@ $(document).ready(function() {
 			$("#answervalue").text(data['answer']);
 			$("#diagram-view").html(data['diagram']);
 			
+			if (data.type == 2) {
+				$("#otherchoicesview").show();
+				$("#otherchoice1").html(Wiky.toHtml(data['choice1']));
+				$("#otherchoice2").html(Wiky.toHtml(data['choice2']));
+				$("#otherchoice3").html(Wiky.toHtml(data['choice3']));
+			}
+			else {
+				$("#otherchoicesview").hide();
+			}
+			
 			//AMprocessNode($("#questionvalue")[0]);
 			// fill in the values of the edit question dialog
 			
@@ -142,6 +203,22 @@ $(document).ready(function() {
 			$("#dialog-question-form input[name='diagram']").val(data['diagram']);
 			$("#form-diagram-view").html(data['diagram']);
 			$("#dialog-question-form input[name='key']").val(data['key']);
+			
+			if (data.type == 2) {
+				$("#dialog-question-form input[name='choice1']").val(data['choice1']);
+				$("#dialog-question-form input[name='choice2']").val(data['choice2']);
+				$("#dialog-question-form input[name='choice3']").val(data['choice3']);
+				var answer = [data['answer'], data['choice1'], data['choice2'], data['choice3']].join('\n\n')
+				$("#answerspreview").html(Wiky.toHtml(answer));
+				$("#multiple-choice-fields").show();
+			}
+			else {
+				$("#dialog-question-form input[name='choice1']").val('');
+				$("#dialog-question-form input[name='choice2']").val('');
+				$("#dialog-question-form input[name='choice3']").val('');
+				$("#answerspreview").html('');
+				$("#multiple-choice-fields").hide();
+			} 
 			
 			$("#questionpreview").html(Wiky.toHtml(data['question']));
 			//AMprocessNode($("#questionpreview")[0]);
@@ -237,8 +314,15 @@ $(document).ready(function() {
 		$("#dialog-question-form input[name='key']").val('');
 		$("#questionpreview").html('');
 		
+		$("#multiple-choice-fields").hide();
+		$("#dialog-question-form input[name='choice1']").val('');
+		$("#dialog-question-form input[name='choice2']").val('');
+		$("#dialog-question-form input[name='choice3']").val('');
+		$("#answerspreview").html('');
+		
 		$("#question-form-tab").tabs("select", 0);
 		$("#dialog-question-form" ).dialog("open");
+		
 	});
 	
 	//$("#categoryselector").selectable();
@@ -298,7 +382,7 @@ $(document).ready(function() {
 			var s = $("#dialog-question-form input[name='diagram']").val();
 			
 			window.svgCanvas = new embedded_svg_edit($("iframe[name='svg-edit']")[0]);
-			//$("iframe[name='svg-edit']").contents().find("#main_button").hide();
+			$("iframe[name='svg-edit']").contents().find("#main_button").hide();
 			if (s) {
 				window.svgCanvas.setSvgString(s);
 				setTimeout(function () {
@@ -321,20 +405,28 @@ $(document).ready(function() {
 		$("#dialog-svg-edit").dialog("open");
 	});
 	
+	$("#dialog-question-form select[name='type']").change( function () {
+		var questiontype = $(this).val();
+		if (questiontype == '2') {
+			$("#multiple-choice-fields").show();
+		}
+		else {
+			$("#multiple-choice-fields").hide();
+		}
+	});
+	
+	$("input[name=updateanswerpreview]").click( function () {
+		var choices = [];
+		choices.push($("#dialog-question-form input[name='answer']").val());
+		choices.push($("#dialog-question-form input[name='choice1']").val());
+		choices.push($("#dialog-question-form input[name='choice2']").val());
+		choices.push($("#dialog-question-form input[name='choice3']").val());
+		
+		var answer = choices.join('\n\n');
+		
+		$("#answerspreview").html(Wiky.toHtml(answer));
+		
+	});
+	
 	LoadQuestions(0);
-	
-	//var svgCanvas = new embedded_svg_edit(window.frames['svg-edit']);
-	var s = '\
-			<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">\
-			 <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->\
-			 <g>\
-			  <title>Layer 1</title>\
-			  <ellipse ry="61" rx="54" id="svg_1" cy="153" cx="147" stroke-width="5" stroke="#000000" fill="#FF0000"/>\
-			 </g>\
-			</svg>';
-	//svgCanvas.setSvgString(s);
-	//$("iframe[name='svg-edit']").load(function () {
-	//	window.frames['svg-edit'].svgCanvas.setSvgString(s);
-	//});
-	
 });

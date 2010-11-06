@@ -20,7 +20,7 @@ class MainHandler(webapp.RequestHandler):
 	def get(self):
 		self.response.headers['Content-Type'] = 'application/xhtml+xml'
 		path = os.path.join(os.path.dirname(__file__), 'templates/questions/main.html')
-		self.response.out.write(template.render(path, dict(categories=CATEGORIES)))
+		self.response.out.write(template.render(path, dict(categories=CATEGORIES, questiontypes=QUESTIONTYPES)))
     	
 class Save(webapp.RequestHandler):
 	@requireusertype('Trainer', 'Encoder')
@@ -33,18 +33,25 @@ class Save(webapp.RequestHandler):
 		diagram = self.request.get('diagram')
 		
 		if not key:
-			if diagram:
-				question = Question(category=int(category), questiontype=int(qtype), question=questiontext, answer=answer, diagram=diagram)
-			else:
-				question = Question(category=int(category), questiontype=int(qtype), question=questiontext, answer=answer)
+			question = Question()
 		else:
 			question = db.get(db.Key(key))
-			question.questiontype = int(qtype)
-			question.question = questiontext
-			question.answer = answer
-			question.category = int(category)
-			if diagram:
-				question.diagram = diagram
+			
+		question.category = int(category)
+		question.questiontype = int(qtype)
+		question.question = questiontext
+		question.answer = answer
+			
+		if diagram:
+			question.diagram = diagram
+				
+		if qtype == '2':
+			question.choices = []
+			question.choices.append(self.request.get('choice1'))
+			question.choices.append(self.request.get('choice2'))
+			question.choices.append(self.request.get('choice3'))
+		else:
+			question.choices = []
 			
 		self.response.headers['Content-Type'] = 'text/json'
 		try:	
@@ -81,14 +88,16 @@ class QList(webapp.RequestHandler):
 			prevcursors.append(cursor)
 		
 		qlist = []
+		qtypedict = dict(QUESTIONTYPES)
 		questionslist = questions.fetch(25)
 		for q in questionslist:
 			d = {}
 			d['key'] = q.key()
-			if q.questiontype == 1:
-				d['questiontype'] = 'Numerical Answer'
-			elif q.questiontype == 2:
-				d['questiontype'] = 'Text Answer'
+			#if q.questiontype == 1:
+			#	d['questiontype'] = 'Numerical Answer'
+			#elif q.questiontype == 2:
+			#	d['questiontype'] = 'Text Answer'
+			d['questiontype'] = qtypedict[q.questiontype]
 			if len(q.question) > 60:
 				d['question'] = q.question[:60] + '...'
 			else:
@@ -134,14 +143,16 @@ class QPrevList(webapp.RequestHandler):
 			disableprevious = True
 		
 		qlist = []
+		qtypedict = dict(QUESTIONTYPES)
 		questionslist = questions.fetch(25)
 		for q in questionslist:
 			d = {}
 			d['key'] = q.key()
-			if q.questiontype == 1:
-				d['questiontype'] = 'Numerical Answer'
-			elif q.questiontype == 2:
-				d['questiontype'] = 'Text Answer'
+			#if q.questiontype == 1:
+			#	d['questiontype'] = 'Numerical Answer'
+			#elif q.questiontype == 2:
+			#	d['questiontype'] = 'Text Answer'
+			d['questiontype'] = qtypedict[q.questiontype]
 			if len(q.question) > 60:
 				d['question'] = q.question[:60] + '...'
 			else:
@@ -165,15 +176,18 @@ class QuestionDetail(webapp.RequestHandler):
 		
 		self.response.headers['Content-Type'] = 'text/json'
 		
+		qtypedict = dict(QUESTIONTYPES)
+		
 		if key:
 			question = db.get(db.Key(key))
 			if question:
 				d = {}
 				d['type'] = question.questiontype
-				if question.questiontype == 1:
-					d['typename'] = 'Numerical Answer'
-				elif question.questiontype == 2:
-					d['typename'] = 'Text Answer'
+				#if question.questiontype == 1:
+				#	d['typename'] = 'Numerical Answer'
+				#elif question.questiontype == 2:
+				#	d['typename'] = 'Text Answer'
+				d['typename'] = qtypedict[question.questiontype]
 				d['category'] = question.category
 				d['categoryname'] = dict(CATEGORIES)[question.category]
 				d['question'] = question.question
@@ -185,6 +199,11 @@ class QuestionDetail(webapp.RequestHandler):
 					d['diagram'] = ''
 				d['key'] = key
 				
+				if question.questiontype == 2:
+					d['choice1'] = question.choices[0]
+					d['choice2'] = question.choices[1]
+					d['choice3'] = question.choices[2]
+					
 				self.response.out.write(json.dumps(d))
 			else:
 				self.response.out.write(json.dumps(dict(message="question not found")))

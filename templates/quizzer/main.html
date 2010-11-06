@@ -34,6 +34,7 @@
 <div id="dialog-answer-question" title="Answer Question">
 	<input type="hidden" name="questionkey" value="" />
 	<input type="hidden" name="sessionkey" value="" />
+	<input type="hidden" name="questiontype" value="" />
 	<div class="field">
 		<div class="label">
 			Elapsed Time
@@ -52,12 +53,57 @@
 			</div>
 		</div>
 	</div>
-	<div class="field">
-		<div class="label">
-			Answer
+	<div id="textanswerform">
+		<div class="field">
+			<div class="label">
+				Answer
+			</div>
+			<div class="widget">
+				<input type="text" name="answer" value="" />
+			</div>
 		</div>
-		<div class="widget">
-			<input type="text" name="answer" value="" />
+	</div>
+	<div id="multiplechoiceform">
+		<div class="field">
+			<div class="label">
+				Answer
+			</div>
+			<div class="widget">
+				<table>
+					<tr>
+						<td>	
+							<input type="radio" name="choice" id="choice1input" value="" />
+						</td>
+						<td>
+							<span id="choice1label"></span>
+						</td>
+					</tr>
+					<tr>
+						<td>	
+							<input type="radio" name="choice" id="choice2input" value="" />
+						</td>
+						<td>
+							<span id="choice2label"></span>
+						</td>
+					</tr>
+					<tr>
+						<td>	
+							<input type="radio" name="choice" id="choice3input" value="" />
+						</td>
+						<td>
+							<span id="choice3label"></span>
+						</td>
+					</tr>
+					<tr>
+						<td>	
+							<input type="radio" name="choice" id="choice4input" value="" />
+						</td>
+						<td>
+							<span id="choice4label"></span>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>

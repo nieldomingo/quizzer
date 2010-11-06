@@ -47,9 +47,38 @@ $(document).ready(function() {
 					$.loading(false);
 					$("#dialog-answer-question input[name='questionkey']").val(data['questionkey']);
 					$("#dialog-answer-question input[name='sessionkey']").val(data['sessionkey']);
+					$("#dialog-answer-question input[name='questiontype']").val(data['qtype'])
 					$("#dialog-answer-question #questionvalue").html(Wiky.toHtml(data['question']));
 					$("#dialog-answer-question input[name='answer']").val('');
 					$("#question-diagram").html(data['diagram']);
+					
+					
+					if (data['qtype'] == 2) {
+						$("#multiplechoiceform").show();
+						$("#textanswerform").hide();
+						
+						$("#choice1label").html(Wiky.toHtml(data['choices'][0]));
+						$("#choice1input").val(data['choices'][0]);
+						$("#choice1input")[0].checked = false;
+						
+						$("#choice2label").html(Wiky.toHtml(data['choices'][1]));
+						$("#choice2input").val(data['choices'][1]);
+						$("#choice2input")[0].checked = false;
+						
+						$("#choice3label").html(Wiky.toHtml(data['choices'][2]));
+						$("#choice3input").val(data['choices'][2]);
+						$("#choice3input")[0].checked = false;
+						
+						$("#choice4label").html(Wiky.toHtml(data['choices'][3]));
+						$("#choice4input").val(data['choices'][3]);
+						$("#choice4input")[0].checked = false;
+						
+					}
+					else {
+						$("#multiplechoiceform").hide();
+						$("#textanswerform").show();
+					}
+					
 					$("#dialog-answer-question").dialog("open");
 					starttimer();
 				});
@@ -67,7 +96,16 @@ $(document).ready(function() {
 				$(this).dialog("close");
 				var questionkey = $("#dialog-answer-question input[name='questionkey']").val();
 				var sessionkey = $("#dialog-answer-question input[name='sessionkey']").val();
-				var answer = $("#dialog-answer-question input[name='answer']").val();
+				var questiontype = $("#dialog-answer-question input[name='questiontype']").val();
+				
+				var answer = ''
+				
+				if (questiontype == '2') {
+					answer = $("#dialog-answer-question input[name='choice']:checked").val();
+				}
+				else {
+					answer = $("#dialog-answer-question input[name='answer']").val();
+				}
 				
 				$.loading(true, {align: 'center'});
 				$.getJSON('/quizzer/endquestion', {questionkey: questionkey, sessionkey: sessionkey, answer: answer, duration: timercount}, function (data) {

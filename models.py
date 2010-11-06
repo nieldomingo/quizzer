@@ -23,6 +23,7 @@ class Question(search.SearchableModel):
 	active = db.BooleanProperty(default=True)
 	#timesanswered = db.IntegerProperty(default=0) # for removal
 	index = db.ReferenceProperty(QuestionIndex)
+	choices = db.StringListProperty()
 	
 	@classmethod
 	def SearchableProperties(cls):

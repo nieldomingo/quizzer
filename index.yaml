@@ -164,18 +164,6 @@ indexes:
   - name: questiondatetime
     direction: desc
 
-- kind: Quiz
-  properties:
-  - name: quizzer
-  - name: datetime
-    direction: desc
-
-- kind: QuizSession
-  properties:
-  - name: quiz
-  - name: datetime
-    direction: desc
-
 - kind: Users
   properties:
   - name: usertype

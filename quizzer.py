@@ -9,6 +9,7 @@ from google.appengine.api import users
 import os
 from django.utils import simplejson as json
 import math
+import random
 
 from models import *
 from users import requireusertype
@@ -65,14 +66,16 @@ class QList(webapp.RequestHandler):
 			prevcursors.append(cursor)
 		
 		qlist = []
+		qtypedict = dict(QUESTIONTYPES)
 		questionslist = questions.fetch(25)
 		for q in questionslist:
 			d = {}
 			d['key'] = q.parent().key()
-			if q.questiontype == 1:
-				d['questiontype'] = 'Numerical Answer'
-			elif q.questiontype == 2:
-				d['questiontype'] = 'Text Answer'
+			#if q.questiontype == 1:
+			#	d['questiontype'] = 'Numerical Answer'
+			#elif q.questiontype == 2:
+			#	d['questiontype'] = 'Text Answer'
+			d['questiontype'] = qtypedict[q.questiontype]
 			if len(q.parent().question) > 60:
 				d['question'] = q.parent().question[:60] + '...'
 			else:
@@ -139,14 +142,16 @@ class QPrevList(webapp.RequestHandler):
 			disableprevious = True
 				
 		qlist = []
+		qtypedict = dict(QUESTIONTYPES)
 		questionslist = questions.fetch(25)
 		for q in questionslist:
 			d = {}
 			d['key'] = q.parent().key()
-			if q.questiontype == 1:
-				d['questiontype'] = 'Numerical Answer'
-			elif q.questiontype == 2:
-				d['questiontype'] = 'Text Answer'
+			#if q.questiontype == 1:
+			#	d['questiontype'] = 'Numerical Answer'
+			#elif q.questiontype == 2:
+			#	d['questiontype'] = 'Text Answer'
+			d['questiontype'] = qtypedict[q.questiontype]
 			if len(q.parent().question) > 60:
 				d['question'] = q.parent().question[:60] + '...'
 			else:
@@ -178,7 +183,19 @@ class StartQuestion(webapp.RequestHandler):
 				ans = AnswerSession()
 				ans.question = question
 				ans.put()
-				self.response.out.write(json.dumps(dict(question=question.question, sessionkey=str(ans.key()), questionkey=key, diagram=question.diagram)))
+				d = {}
+				d['question'] = question.question
+				d['qtype'] = question.questiontype
+				d['sessionkey'] = str(ans.key())
+				d['questionkey'] = key
+				d['diagram'] = question.diagram
+				if question.questiontype == 2:
+					choices = list(question.choices)
+					choices.append(question.answer)
+					random.shuffle(choices)
+					d['choices'] = choices
+					
+				self.response.out.write(json.dumps(d))
 			else:
 				self.response.out.write(json.dumps(dict(message="question not found")))
 		else:
@@ -204,15 +221,22 @@ class EndQuestion(webapp.RequestHandler):
 				ans.duration = int(duration)
 				ans.answer = answer
 				correctflag = False
-				try:
-					error = math.fabs((float(question.answer) - float(answer)) / float(question.answer))
-					if error < 0.01:
+				if question.questiontype == 1:
+					try:
+						error = math.fabs((float(question.answer) - float(answer)) / float(question.answer))
+						if error < 0.01:
+							ans.correct = True
+							correctflag = True
+						#else:
+						#	ans.correct = False
+					except ValueError:
+						pass
+						#ans.correct = False
+				elif question.questiontype == 2:
+					if answer == question.answer:
 						ans.correct = True
 						correctflag = True
-					else:
-						ans.correct = False
-				except ValueError:
-					ans.correct = False
+						
 				ans.put()
 				db.run_in_transaction(increment_timesanswered, question.index.key())
 				

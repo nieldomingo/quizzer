@@ -55,7 +55,14 @@ body {
 }
 
 #questionpreview {
-	height: 210px;
+	height: 310px;
+	padding: 5px;
+	overflow: auto;
+	border: 1px solid #A6C9E2;
+}
+
+#answerspreview {
+    height: 150px;
 	padding: 5px;
 	overflow: auto;
 	border: 1px solid #A6C9E2;
@@ -83,7 +90,7 @@ body {
 }
 
 #question-form-tab {
-	height: 500px;
+	height: 600px;
 }
 
 iframe[name='svg-edit'] {
