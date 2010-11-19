@@ -31,6 +31,9 @@ handlers:
   
 - url: /quizzer/.*
   script: quizzer.py
+  
+- url: /tasks/.*
+  script: tasks.py
 
 - url: .*
   script: main.py

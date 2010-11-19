@@ -179,7 +179,7 @@ $(document).ready(function() {
 			$("#typevalue").text(data['typename']);
 			//$("#questionvalue").text(data['question']);
 			$("#questionvalue").html(Wiky.toHtml(data['question']));
-			$("#answervalue").text(data['answer']);
+			$("#answervalue").html(Wiky.toHtml(data['answer']));
 			$("#diagram-view").html(data['diagram']);
 			
 			if (data.type == 2) {
@@ -382,7 +382,7 @@ $(document).ready(function() {
 			var s = $("#dialog-question-form input[name='diagram']").val();
 			
 			window.svgCanvas = new embedded_svg_edit($("iframe[name='svg-edit']")[0]);
-			$("iframe[name='svg-edit']").contents().find("#main_button").hide();
+			//$("iframe[name='svg-edit']").contents().find("#main_button").hide();
 			if (s) {
 				window.svgCanvas.setSvgString(s);
 				setTimeout(function () {

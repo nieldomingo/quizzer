@@ -67,6 +67,25 @@ class QuestionQuizzerStats(db.Model):
 	answered = db.BooleanProperty(default=False)
 	answeredcorrectly = db.BooleanProperty(default=False)
 	
+class DailySummary(db.Model):
+	quizzer = db.UserProperty()
+	answeredcount = db.IntegerProperty(default=0)
+	correctcount = db.IntegerProperty(default=0)
+	avgduration = db.FloatProperty(default=0.0)
+	year = db.IntegerProperty()
+	month = db.IntegerProperty()
+	day = db.IntegerProperty()
+	
+class DailySummaryMarker(db.Model):
+	category = db.IntegerProperty()
+	session = db.ReferenceProperty(AnswerSession)
+	
+class DailySummaryCategoryCount(db.Model):
+	category = db.IntegerProperty()
+	answeredcount = db.IntegerProperty(default=0)
+	correctcount = db.IntegerProperty(default=0)
+	avgduration = db.FloatProperty()
+	
 def increment_timesanswered(key):
 	q = db.get(key)
 	q.timesanswered += 1
