@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>{% block title %}Title{% endblock %}</title>
+		<link type="text/css" href="/stylesheets/redmond/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
+		<link type="text/css" href="/stylesheets/wiky.css" rel="stylesheet" />
+		<link type="text/css" href="/stylesheets/wiky.math.css" rel="stylesheet" />
+		<script type="text/javascript" src="/javascripts/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery-ui-1.8.5.custom.min.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery.pulse.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery.measure.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery.place.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery.mask.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery.loading.js"></script>
+		<script type="text/javascript" src="/javascripts/loading.js"></script>
+		<script type="text/javascript" src="/javascripts/wiky.js"></script>
+		<script type="text/javascript" src="/javascripts/wiky.math.js"></script>
+		{% block javascript %}
+		{% endblock %}
+		<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+	</head>
+	<body>
+		<div id="header">
+			<div id="personaloptions">
+				{% block username %}{% endblock %}
+				<a href="/logout">Logout</a>
+			</div>
+			{% block header %}{% endblock %}
+		</div>
+		<div id="sidebar">
+			<a href="/trainer/">Trainer Home</a>
+			<h3>Reports</h3>
+			<div>
+				<a href="/trainer/daily/">Daily Summaries</a>
+			</div>
+			{% block sidebar %}
+			{% endblock %}
+		</div>
+		<div id="main">
+			{% block main %}
+			{% endblock %}
+		</div>
+	</body>
+</html>

@@ -76,6 +76,17 @@ def getQuizzers():
 	query.order('fullname')
 	
 	return query
+	
+def getUserFromKey(userkey):
+	user = db.get(userkey)
+	return user.user
+	
+def getUser2(user):
+	query = Users.all()
+	query.filter('user =', user)
+	suser = query.fetch(1)
+	
+	return suser[0]
 
 class MainUsersHandler(webapp.RequestHandler):
     def get(self):

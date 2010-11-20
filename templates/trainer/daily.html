@@ -1,0 +1,39 @@
+{% extends "trainerbase.html" %}
+
+{% block title %}Daily Summary{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="http://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.0','packages':['corechart', 'table']}]}"></script>
+<script type="text/javascript" src="/javascripts/daily.js"></script>
+{% endblock %}
+
+{% block main %}
+<div id="trainermain">
+	<div>
+		Select Day:
+		<select name="day">
+			{% for day in days %}
+			<option value="{{ day }}">{{ day }}</option>
+			{% endfor %}
+		</select>
+		Select Quizzer:
+		<select name="quizzer">
+		</select>
+	</div>
+	<div id="percentcorrect">
+	</div>
+	
+	<div id="percentcategory">
+	</div>
+	
+	<div id="answerbycategory">
+	</div>
+	
+	<div id="answersessions">
+	</div>
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

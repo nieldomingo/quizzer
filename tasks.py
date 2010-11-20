@@ -75,15 +75,28 @@ class SummarizeDayHandler(webapp.RequestHandler):
 			try:
 				taskqueue.Task(url='/tasks/summarizeday', params={'cursor': query.cursor(),
 								'year': str(year), 'month': str(month), 'day': str(day),
-								'gen': gen + 1}, name='%s-%s-%s-%s'%(year, month, day, gen + 1)).add()
+								'gen': gen + 1}, name='%s-%s-%s-%s'%(year, month, day, gen + 1)).add(queue_name='daily')
 			except taskqueue.TaskAlreadyExistsError:
 				pass
+				
+		q = DailySummary.all()
+		q.filter('datetime =', datetime.datetime(year=year, month=month, day=day))
+		q.filter('quizzer =', None)
+		
+		if q.count():
+			dsmain = q.fetch(1)[0]
+		else:
+			dsmain = DailySummary()
+			dsmain.quizzer = None
+			dsmain.datetime = datetime.datetime(year=year, month=month, day=day)
+			dsmain.put()
 		
 		for ans in anssession:
 			q = DailySummary.all()		
-			q.filter('year =', year)
-			q.filter('month =', month)
-			q.filter('day =', day)
+			#q.filter('year =', year)
+			#q.filter('month =', month)
+			#q.filter('day =', day)
+			q.filter('datetime =', datetime.datetime(year=year, month=month, day=day))
 			q.filter('quizzer =', ans.quizzer)
 			
 			if q.count():
@@ -91,14 +104,16 @@ class SummarizeDayHandler(webapp.RequestHandler):
 			else:
 				ds = DailySummary()
 				ds.quizzer = ans.quizzer
-				ds.year = year
-				ds.month = month
-				ds.day = day
+				#ds.year = year
+				#ds.month = month
+				#ds.day = day
+				ds.datetime = datetime.datetime(year=year, month=month, day=day)
 				ds.put()
 			
 			q2 = DailySummaryMarker.all().ancestor(ds).filter('session =', ans)
 			if not q2.count():
 				db.run_in_transaction(update_dailysummary, ds.key(), ans.correct, ans.duration, ans.question.category, str(ans.key()))
+				db.run_in_transaction(update_dailysummary, dsmain.key(), ans.correct, ans.duration, ans.question.category, str(ans.key()))
 			
 		
 class SummarizeDailyHandler(webapp.RequestHandler):
@@ -107,7 +122,7 @@ class SummarizeDailyHandler(webapp.RequestHandler):
 		dtprev = datetime.datetime(dtnow.year, dtnow.month, dtnow.day, tzinfo=phtz) - datetime.timedelta(days=1)
 		
 		taskqueue.Task(url='/tasks/summarizeday', params={'year': str(dtprev.year), 'month': str(dtprev.month),
-						'day': str(dtprev.day), 'gen': '1'}, name="%s-%s-%s-%s"%(dtprev.year, dtprev.month, dtprev.day, 1)).add()
+						'day': str(dtprev.day), 'gen': '1'}, name="%s-%s-%s-%s"%(dtprev.year, dtprev.month, dtprev.day, 1)).add(queue_name='daily')
 
 def main():
 	application = webapp.WSGIApplication([('/tasks/', MainHandler),

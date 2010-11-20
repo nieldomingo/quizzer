@@ -103,6 +103,22 @@ iframe[name='svg-edit'] {
 	height: 300px;
 }
 
+#percentcorrect, #percentcategory {
+	width: 450px;
+	height: 400px;
+}
+
+#answerbycategory {
+	width: 700px;
+	height: 400px;
+}
+
+/*
+#trainermain {
+	width: 1000px;
+}
+*/
+
 /*
 #svg-edit-div {
 	position: absolute;

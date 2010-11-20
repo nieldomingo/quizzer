@@ -238,7 +238,7 @@ class EndQuestion(webapp.RequestHandler):
 						correctflag = True
 						
 				ans.put()
-				db.run_in_transaction(increment_timesanswered, question.index.key())
+				#db.run_in_transaction(increment_timesanswered, question.index.key())
 				
 				quizzer = users.get_current_user()
 				
@@ -252,11 +252,11 @@ class EndQuestion(webapp.RequestHandler):
 					
 				
 				if correctflag:
-					db.run_in_transaction(increment_timescorrect, question.index.key())
+					#db.run_in_transaction(increment_timescorrect, question.index.key())
 					db.run_in_transaction(update_questionquizzer, qqs.key(), True, int(duration))
 					self.response.out.write(json.dumps(dict(result="correct")))
 				else:
-					db.run_in_transaction(increment_timeswrong, question.index.key())
+					#db.run_in_transaction(increment_timeswrong, question.index.key())
 					db.run_in_transaction(update_questionquizzer, qqs.key(), False, int(duration))
 					self.response.out.write(json.dumps(dict(result="wrong")))
 			else:

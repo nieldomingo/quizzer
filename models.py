@@ -8,9 +8,9 @@ class QuestionIndex(db.Model):
 	category = db.IntegerProperty()
 	active = db.BooleanProperty(default=True)
 	questiontype = db.IntegerProperty(default=1)
-	timesanswered = db.IntegerProperty(default=0)
-	timescorrect = db.IntegerProperty(default=0)
-	timeswrong = db.IntegerProperty(default=0)
+	#timesanswered = db.IntegerProperty(default=0)
+	#timescorrect = db.IntegerProperty(default=0)
+	#timeswrong = db.IntegerProperty(default=0)
 
 class Question(search.SearchableModel):
 	#author = db.UserProperty(auto_current_user_add=True) # for removal
@@ -72,9 +72,10 @@ class DailySummary(db.Model):
 	answeredcount = db.IntegerProperty(default=0)
 	correctcount = db.IntegerProperty(default=0)
 	avgduration = db.FloatProperty(default=0.0)
-	year = db.IntegerProperty()
-	month = db.IntegerProperty()
-	day = db.IntegerProperty()
+	#year = db.IntegerProperty()
+	#month = db.IntegerProperty()
+	#day = db.IntegerProperty()
+	datetime = db.DateTimeProperty()
 	
 class DailySummaryMarker(db.Model):
 	category = db.IntegerProperty()

@@ -34,6 +34,10 @@ handlers:
   
 - url: /tasks/.*
   script: tasks.py
+  login: admin
+  
+- url: /trainer/.*
+  script: trainer.py
 
 - url: .*
   script: main.py
