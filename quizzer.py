@@ -303,7 +303,7 @@ class RequestQuestions(webapp.RequestHandler):
 			query.filter("active =", True).filter("category =", int(category)).order("datetime")
 		
 		cnt = 0
-		for question in query.fetch(20):
+		for question in query.fetch(10):
 			qqs = QuestionQuizzerStats(parent=question,
 				quizzer=quizzer,
 				category=int(category),

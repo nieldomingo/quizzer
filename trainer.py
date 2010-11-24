@@ -20,12 +20,14 @@ from timezones import phtz
 from timezones import utctz
 
 class MainHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def get(self):
 		#self.response.headers['Content-Type'] = 'application/xhtml+xml'
 		path = os.path.join(os.path.dirname(__file__), 'templates/trainer/main.html')
 		self.response.out.write(template.render(path, dict()))
 		
 class DailyHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def get(self):
 		dss = DailySummary.all().filter('quizzer =', None).filter('datetime >=', datetime.datetime.now() - datetime.timedelta(days=30)).order('-datetime')
 		
@@ -39,6 +41,7 @@ class DailyHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(days=dtlist)))
 		
 class DailyQuizzerOptionsHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def post(self):
 		daystr = self.request.get('day')
 		dt = datetime.datetime.strptime(daystr, "%Y-%m-%d")
@@ -57,6 +60,7 @@ class DailyQuizzerOptionsHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, dict(options=optionlist)))
 		
 class DPercentCorrectHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def post(self):
 		daystr = self.request.get('day')
 		dt = datetime.datetime.strptime(daystr, "%Y-%m-%d")
@@ -82,6 +86,7 @@ class DPercentCorrectHandler(webapp.RequestHandler):
 		self.response.out.write(json.dumps(d))
 		
 class DPercentCategoryHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def post(self):
 		daystr = self.request.get('day')
 		dt = datetime.datetime.strptime(daystr, "%Y-%m-%d")
@@ -110,6 +115,7 @@ class DPercentCategoryHandler(webapp.RequestHandler):
 		self.response.out.write(json.dumps(d))
 		
 class DAnsweredbyCategoryHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def post(self):
 		daystr = self.request.get('day')
 		dt = datetime.datetime.strptime(daystr, "%Y-%m-%d")
@@ -140,6 +146,7 @@ class DAnsweredbyCategoryHandler(webapp.RequestHandler):
 		self.response.out.write(json.dumps(d))
 		
 class DAnswerSessionListHandler(webapp.RequestHandler):
+	@requireusertype('Trainer')
 	def post(self):
 		daystr = self.request.get('day')
 		dt = datetime.datetime.strptime(daystr, "%Y-%m-%d")

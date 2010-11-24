@@ -69,15 +69,7 @@ class SummarizeDayHandler(webapp.RequestHandler):
 		if cursor:
 			query.with_cursor(cursor)
 			
-		anssession = query.fetch(3)
-		
-		if len(anssession) == 3:
-			try:
-				taskqueue.Task(url='/tasks/summarizeday', params={'cursor': query.cursor(),
-								'year': str(year), 'month': str(month), 'day': str(day),
-								'gen': gen + 1}, name='%s-%s-%s-%s'%(year, month, day, gen + 1)).add(queue_name='daily')
-			except taskqueue.TaskAlreadyExistsError:
-				pass
+		anssession = query.fetch(2)
 				
 		q = DailySummary.all()
 		q.filter('datetime =', datetime.datetime(year=year, month=month, day=day))
@@ -85,11 +77,13 @@ class SummarizeDayHandler(webapp.RequestHandler):
 		
 		if q.count():
 			dsmain = q.fetch(1)[0]
-		else:
+		elif len(anssession):
 			dsmain = DailySummary()
 			dsmain.quizzer = None
 			dsmain.datetime = datetime.datetime(year=year, month=month, day=day)
 			dsmain.put()
+		else:
+			return
 		
 		for ans in anssession:
 			q = DailySummary.all()		
@@ -112,8 +106,17 @@ class SummarizeDayHandler(webapp.RequestHandler):
 			
 			q2 = DailySummaryMarker.all().ancestor(ds).filter('session =', ans)
 			if not q2.count():
-				db.run_in_transaction(update_dailysummary, ds.key(), ans.correct, ans.duration, ans.question.category, str(ans.key()))
-				db.run_in_transaction(update_dailysummary, dsmain.key(), ans.correct, ans.duration, ans.question.category, str(ans.key()))
+			    category = ans.question.category
+				db.run_in_transaction(update_dailysummary, ds.key(), ans.correct, ans.duration, category, str(ans.key()))
+				db.run_in_transaction(update_dailysummary, dsmain.key(), ans.correct, ans.duration, category, str(ans.key()))
+				
+		if len(anssession) == 2:
+			try:
+				taskqueue.Task(url='/tasks/summarizeday', params={'cursor': query.cursor(),
+								'year': str(year), 'month': str(month), 'day': str(day),
+								'gen': gen + 1}, name='%s-%s-%s-%s'%(year, month, day, gen + 1)).add(queue_name='daily')
+			except taskqueue.TaskAlreadyExistsError:
+				pass
 			
 		
 class SummarizeDailyHandler(webapp.RequestHandler):

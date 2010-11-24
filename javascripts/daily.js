@@ -108,6 +108,8 @@ $(document).ready(function() {
 		LoadPercentCategory();
 		LoadAnswerbyCategory();
 		LoadQuizzerOptions();
+		
+		$("#answersessions").hide();
 	});
 	
 	$("select[name='quizzer']").change(function () {

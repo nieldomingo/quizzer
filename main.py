@@ -30,7 +30,7 @@ class MainHandler(webapp.RequestHandler):
 		elif usertype == 'Encoder':
 			self.redirect('/questions/')
 		elif usertype == 'Trainer':
-			self.redirect('/questions/')
+			self.redirect('/trainer/')
 		
 class LogoutHandler(webapp.RequestHandler):
 	def get(self):
