@@ -69,7 +69,9 @@ class SummarizeDayHandler(webapp.RequestHandler):
 		if cursor:
 			query.with_cursor(cursor)
 			
-		anssession = query.fetch(2)
+		entriespertask = 1
+		
+		anssession = query.fetch(entriespertask)
 				
 		q = DailySummary.all()
 		q.filter('datetime =', datetime.datetime(year=year, month=month, day=day))
@@ -110,7 +112,7 @@ class SummarizeDayHandler(webapp.RequestHandler):
 				db.run_in_transaction(update_dailysummary, ds.key(), ans.correct, ans.duration, category, str(ans.key()))
 				db.run_in_transaction(update_dailysummary, dsmain.key(), ans.correct, ans.duration, category, str(ans.key()))
 				
-		if len(anssession) == 2:
+		if len(anssession) == entriespertask:
 			try:
 				taskqueue.Task(url='/tasks/summarizeday', params={'cursor': query.cursor(),
 								'year': str(year), 'month': str(month), 'day': str(day),
