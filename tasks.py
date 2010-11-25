@@ -106,7 +106,7 @@ class SummarizeDayHandler(webapp.RequestHandler):
 			
 			q2 = DailySummaryMarker.all().ancestor(ds).filter('session =', ans)
 			if not q2.count():
-			    category = ans.question.category
+				category = ans.question.category
 				db.run_in_transaction(update_dailysummary, ds.key(), ans.correct, ans.duration, category, str(ans.key()))
 				db.run_in_transaction(update_dailysummary, dsmain.key(), ans.correct, ans.duration, category, str(ans.key()))
 				
