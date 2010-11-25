@@ -119,11 +119,11 @@ $(document).ready(function() {
 						$("#dialog-answer-result").dialog("open");
 					}
 				});
-			},
+			}/*,
 			'Cancel': function () {
 				stoptimer();
 				$(this).dialog("close");
-			}
+			}*/
 		}
 	});
 	
