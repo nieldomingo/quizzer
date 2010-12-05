@@ -8,17 +8,16 @@ from google.appengine.api import users
 
 import os
 from django.utils import simplejson as json
-import cgi
-import urllib
-import random
-import datetime
-import math
+#import cgi
+#import urllib
+#import random
+#import datetime
+#import math
 
 from models import *
 from users import requireusertype
 from users import getUserType
 from users import getQuizzers
-from chart import piechart
 from config import *
 
 class MainHandler(webapp.RequestHandler):
@@ -47,8 +46,7 @@ class TestQuestionsHandler(webapp.RequestHandler):
 
 def main():
 	application = webapp.WSGIApplication([('/', MainHandler),
-	                                      ('/logout', LogoutHandler),
-	                                      ('/testquestions', TestQuestionsHandler)],
+	                                      ('/logout', LogoutHandler)],
 										 debug=True)
 	util.run_wsgi_app(application)
 

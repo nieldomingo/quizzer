@@ -12,6 +12,7 @@ from django.utils import simplejson as json
 from models import *
 from users import requireusertype
 from config import *
+from utils import getsubcategories
 
 import time
 	
@@ -26,6 +27,7 @@ class Save(webapp.RequestHandler):
 	@requireusertype('Trainer', 'Encoder')
 	def get(self):
 		category = self.request.get('category')
+		subcategory = self.request.get('subcategory')
 		qtype = self.request.get('qtype')
 		questiontext = self.request.get('question')
 		answer = self.request.get('answer')
@@ -38,6 +40,7 @@ class Save(webapp.RequestHandler):
 			question = db.get(db.Key(key))
 			
 		question.category = int(category)
+		question.subcategory = int(subcategory)
 		question.questiontype = int(qtype)
 		question.question = questiontext
 		question.answer = answer
@@ -70,6 +73,7 @@ class QList(webapp.RequestHandler):
 		cursor = self.request.get('cursor')
 		searchstring = self.request.get('searchstring')
 		prevcursors = self.request.get('prevcursors')
+		subcategory = self.request.get('subcategory')
 		
 		if prevcursors:
 			prevcursors = prevcursors.split(',')
@@ -79,6 +83,8 @@ class QList(webapp.RequestHandler):
 		questions = Question.all()
 		if category != '0':
 			questions.filter('category =', int(category))
+		if subcategory != '0':
+			questions.filter('subcategory =', int(subcategory))
 		if searchstring:
 			questions.search(searchstring, properties=['question'])
 		questions.order('-datetime')
@@ -125,12 +131,15 @@ class QPrevList(webapp.RequestHandler):
 		category = self.request.get('category')
 		searchstring = self.request.get('searchstring')
 		prevcursors = self.request.get('prevcursors')
+		subcategory = self.request.get('subcategory')
 		
 		prevcursors = prevcursors.split(',')		
 
 		questions = Question.all()
 		if category != '0':
 			questions.filter('category =', int(category))
+		if subcategory != '0':
+			questions.filter('subcategory =', int(subcategory))
 		if searchstring:
 			questions.search(searchstring, properties=['question'])
 		questions.order('-datetime')
@@ -204,11 +213,33 @@ class QuestionDetail(webapp.RequestHandler):
 					d['choice2'] = question.choices[1]
 					d['choice3'] = question.choices[2]
 					
+				# if statement necessary to consider the case of questions without subcategories
+				# this eventually would be obsolete	
+				subcategories = getsubcategories(question.category)
+				if question.subcategory:
+					d['subcategory'] = question.subcategory
+					d['subcategoryname'] = dict(subcategories)[question.subcategory]
+				else:
+					d['subcategory'] = 0
+					d['subcategoryname'] = ''
+					
+				d['subcategoryoptions'] = subcategories
+					
 				self.response.out.write(json.dumps(d))
 			else:
 				self.response.out.write(json.dumps(dict(message="question not found")))
 		else:
 			self.response.out.write(json.dumps(dict(message="must supply key")))
+
+class GetSubcategories(webapp.RequestHandler):
+	@requireusertype('Trainer', 'Encoder')
+	def post(self):
+		category = int(self.request.get('category'))
+		
+		subcategories = getsubcategories(category)
+		
+		path = os.path.join(os.path.dirname(__file__), 'templates/questions/subcategoryoptions.html')
+		self.response.out.write(template.render(path, dict(subcategories=subcategories)))
 
 def main():
 	application = webapp.WSGIApplication([('/questions/', MainHandler),
@@ -216,6 +247,7 @@ def main():
 											('/questions/list', QList),
 											('/questions/prevlist', QPrevList),
 											('/questions/detail', QuestionDetail),
+											('/questions/subcategories', GetSubcategories),
 										],
 										 debug=True)
 	util.run_wsgi_app(application)

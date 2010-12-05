@@ -113,6 +113,15 @@ iframe[name='svg-edit'] {
 	height: 400px;
 }
 
+#subcategorylist {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+#subcategorylist .ui-widget {
+	font-size: 0.8em;
+}
+
 /*
 #trainermain {
 	width: 1000px;

@@ -14,6 +14,7 @@ import random
 from models import *
 from users import requireusertype
 from config import *
+from utils import getsubcategories
 	
 class MainHandler(webapp.RequestHandler):
 	@requireusertype('Quizzer', 'Trainer')
@@ -26,6 +27,7 @@ class QList(webapp.RequestHandler):
 	@requireusertype('Quizzer', 'Trainer')
 	def post(self):
 		category = self.request.get('category')
+		subcategory = self.request.get('subcategory')
 		cursor = self.request.get('cursor')
 		prevcursors = self.request.get('prevcursors')
 		filterval = self.request.get('filterval')
@@ -40,25 +42,22 @@ class QList(webapp.RequestHandler):
 		questions = QuestionQuizzerStats.all()
 		questions.filter("quizzer =", quizzer)
 		if filterval == 'all':
-			if category != '0':
-				questions.filter('category =', int(category))
+			pass
 		elif filterval == 'answered':
 			questions.filter("answered =", True)
-			if category != '0':
-				questions.filter('category =', int(category))
 		elif filterval == 'unanswered':
 			questions.filter("answered =", False)
-			if category != '0':
-				questions.filter('category =', int(category))
 		elif filterval == 'correct':
 			questions.filter("answeredcorrectly =", True)
-			if category != '0':
-				questions.filter('category =', int(category))
 		elif filterval == 'wrong':
 			questions.filter("answeredcorrectly =", False)
 			questions.filter("answered =", True)
-			if category != '0':
-				questions.filter('category =', int(category))
+				
+		if category != '0':
+			questions.filter('category =', int(category))
+		if subcategory != '0':
+			questions.filter('subcategory =', int(subcategory))
+			
 		questions.order('-questiondatetime')
 		
 		if cursor:
@@ -76,11 +75,13 @@ class QList(webapp.RequestHandler):
 			#elif q.questiontype == 2:
 			#	d['questiontype'] = 'Text Answer'
 			d['questiontype'] = qtypedict[q.questiontype]
-			if len(q.parent().question) > 60:
-				d['question'] = q.parent().question[:60] + '...'
+			if len(q.parent().question) > 40:
+				d['question'] = q.parent().question[:40] + '...'
 			else:
 				d['question'] = q.parent().question
 			d['category'] = dict(CATEGORIES)[q.category]
+			subcategories = getsubcategories(q.category)
+			d['subcategory'] = dict(subcategories)[q.subcategory]
 			if q.timesanswered > 0:
 				d['answered'] = True
 			else:
@@ -103,6 +104,7 @@ class QPrevList(webapp.RequestHandler):
 	@requireusertype('Quizzer', 'Trainer')
 	def post(self):
 		category = self.request.get('category')
+		subcategory = self.request.get('subcategory')
 		prevcursors = self.request.get('prevcursors')
 		filterval = self.request.get('filterval')
 		
@@ -113,25 +115,22 @@ class QPrevList(webapp.RequestHandler):
 		questions = QuestionQuizzerStats.all()
 		questions.filter("quizzer =", quizzer)
 		if filterval == 'all':
-			if category != '0':
-				questions.filter('category =', int(category))
+			pass
 		elif filterval == 'answered':
 			questions.filter("answered =", 0)
-			if category != '0':
-				questions.filter('category =', int(category))
 		elif filterval == 'unanswered':
 			questions.filter("answered =", False)
-			if category != '0':
-				questions.filter('category =', int(category))
 		elif filterval == 'correct':
 			questions.filter("answeredcorrectly =", True)
-			if category != '0':
-				questions.filter('category =', int(category))
 		elif filterval == 'wrong':
 			questions.filter("answeredcorrectly =", False)
 			questions.filter("answered =", True)
-			if category != '0':
-				questions.filter('category =', int(category))
+			
+		if category != '0':
+			questions.filter('category =', int(category))
+		if subcategory != '0':
+			questions.filter('subcategory =', int(subcategory))
+			
 		questions.order('-questiondatetime')
 		
 		disableprevious = False
@@ -152,11 +151,13 @@ class QPrevList(webapp.RequestHandler):
 			#elif q.questiontype == 2:
 			#	d['questiontype'] = 'Text Answer'
 			d['questiontype'] = qtypedict[q.questiontype]
-			if len(q.parent().question) > 60:
-				d['question'] = q.parent().question[:60] + '...'
+			if len(q.parent().question) > 40:
+				d['question'] = q.parent().question[:40] + '...'
 			else:
 				d['question'] = q.parent().question
 			d['category'] = dict(CATEGORIES)[q.category]
+			subcategories = getsubcategories(q.category)
+			d['subcategory'] = dict(subcategories)[q.subcategory]
 			if q.timesanswered > 0:
 				d['answered'] = True
 			else:
@@ -285,22 +286,34 @@ class RequestQuestions(webapp.RequestHandler):
 	@requireusertype('Quizzer', 'Trainer')
 	def get(self):
 		category = self.request.get('category')
+		subcategory = self.request.get('subcategory')
 		
 		quizzer = users.get_current_user()
 		
 		query = QuestionQuizzerStats.all()
-		query.filter("quizzer =", quizzer).filter("category =", int(category)).order("-questiondatetime")
+		query.filter("quizzer =", quizzer)
+		query.filter("active =", True)
+		query.filter("category =", int(category))
+		query.filter("subcategory =", int(subcategory))		
+		query.order("-questiondatetime")
 		
 		resultlist = query.fetch(1)
 		if resultlist:
 			markerdate = resultlist[0].questiondatetime
 			
 			query = Question.all()
-			query.filter("active =", True).filter("category =", int(category)).filter("datetime >", markerdate).order("datetime")
+			query.filter("active =", True)
+			query.filter("category =", int(category))
+			query.filter("subcategory =", int(subcategory))
+			query.filter("datetime >", markerdate)
+			query.order("datetime")
 			
 		else:
 			query = Question.all()
-			query.filter("active =", True).filter("category =", int(category)).order("datetime")
+			query.filter("active =", True)
+			query.filter("category =", int(category))
+			query.filter("subcategory =", int(subcategory))
+			query.order("datetime")
 		
 		cnt = 0
 		for question in query.fetch(10):
@@ -308,7 +321,8 @@ class RequestQuestions(webapp.RequestHandler):
 				quizzer=quizzer,
 				category=int(category),
 				questiondatetime=question.datetime,
-				questiontype=question.questiontype)
+				questiontype=question.questiontype,
+				subcategory=question.subcategory)
 			qqs.put()
 			cnt += 1
 			
@@ -318,6 +332,22 @@ class RequestQuestions(webapp.RequestHandler):
 		else:
 			self.response.out.write(json.dumps(dict(result="failed")))
 
+class GetSubcategories(webapp.RequestHandler):
+	@requireusertype('Trainer', 'Quizzer')
+	def post(self):
+		category = int(self.request.get('category'))
+		noall = self.request.get('noall')
+		
+		if noall:
+			allflag = False
+		else:
+			allflag = True
+		
+		subcategories = getsubcategories(category)
+		
+		path = os.path.join(os.path.dirname(__file__), 'templates/quizzer/subcategoryoptions.html')
+		self.response.out.write(template.render(path, dict(subcategories=subcategories, allflag=allflag)))
+
 def main():
 	application = webapp.WSGIApplication([('/quizzer/', MainHandler),
 										  ('/quizzer/list', QList),
@@ -325,7 +355,8 @@ def main():
 										  ('/quizzer/startquestion', StartQuestion),
 										  ('/quizzer/endquestion', EndQuestion),
 										  ('/quizzer/answerstable', AnswersTable),
-										  ('/quizzer/requestquestions', RequestQuestions)
+										  ('/quizzer/requestquestions', RequestQuestions),
+										  ('/quizzer/subcategories', GetSubcategories),
 										],
 										 debug=True)
 	util.run_wsgi_app(application)

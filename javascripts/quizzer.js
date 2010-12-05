@@ -134,11 +134,14 @@ $(document).ready(function() {
 			'Ok': function () {
 				$(this).dialog("close");
 				var category = $("#dialog-quizzer-request select[name='category']").val();
-				$.loading(true, {align: 'center'});
-				$.getJSON('/quizzer/requestquestions', {category: category}, function (data) {
-					$.loading(false);
-					LoadQuestions(false);
-				});
+				var subcategory = $("#dialog-quizzer-request select[name='subcategory']").val();
+				if (subcategory) {
+					$.loading(true, {align: 'center'});
+					$.getJSON('/quizzer/requestquestions', {category: category, subcategory: subcategory}, function (data) {
+						$.loading(false);
+						LoadQuestions(false);
+					});
+				}
 			},
 			'Cancel': function () {
 				$(this).dialog("close");
@@ -160,6 +163,7 @@ $(document).ready(function() {
 		var prevcursors = '';
 		
 		var cat = $("input[name='currentcategory']").attr("value");
+		var subcat = $("select[name='selectsubcategory']").val();
 		var filterval = $("input[name='currentfilter']").val();
 		
 		if (usecursor) {
@@ -168,7 +172,7 @@ $(document).ready(function() {
 		}
 		
 		$.loading(true, {align: 'center'});
-		$("#list").load('/quizzer/list', {category: cat, 'cursor': cursorval, prevcursors: prevcursors, filterval: filterval}, function () {
+		$("#list").load('/quizzer/list', {category: cat, 'cursor': cursorval, prevcursors: prevcursors, filterval: filterval, subcategory: subcat}, function () {
 			$.loading(false);
 			$("#list tbody tr").click( function () {
 				var key = $(this).attr('title');
@@ -190,9 +194,11 @@ $(document).ready(function() {
 	var LoadPreviousQuestions = function () {		
 		var prevcursors = $("input[name='prevcursors']").val();
 		var category = $("input[name='currentcategory']").attr("value");
+		var subcat = $("select[name='selectsubcategory']").val();
+		var filterval = $("input[name='currentfilter']").val();
 		
 		$.loading(true, {align: 'center'});
-		$("#list").load('/quizzer/prevlist', {category: category, prevcursors: prevcursors}, function () {
+		$("#list").load('/quizzer/prevlist', {category: category, prevcursors: prevcursors, filterval: filterval, subcategory: subcat}, function () {
 			$.loading(false);
 			$("#list tbody tr").click( function () {
 				var key = $(this).attr('title');
@@ -215,6 +221,17 @@ $(document).ready(function() {
   		$(this).addClass("selected").siblings().removeClass("selected");
   		var category = $(this).attr("value");
   		$("input[name='currentcategory']").val(category);
+  		if (category != 0) {
+  			$("#selectsubcategory select[name='selectsubcategory']").load('/quizzer/subcategories',
+  				{'category': category},
+  				function () {
+  					$("#selectsubcategory").show();
+  				});
+  		}
+  		else {
+  			$("#selectsubcategory").hide();
+  		}
+  		$("#selectsubcategory select[name='selectsubcategory']").html('<option value="0" selected="True">All</option>');
   		LoadQuestions();
 	});
 	
@@ -228,9 +245,27 @@ $(document).ready(function() {
 	});
 	
 	$("input[name='request']").click( function () {
-		$("#dialog-quizzer-request").dialog("open");
+		var category = $("#dialog-quizzer-request select[name='category']").val();
+		$("#dialog-quizzer-request select[name='subcategory']").load('/quizzer/subcategories',
+  			{'category': category, 'noall': 1},
+  			function () {
+  				$("#dialog-quizzer-request").dialog("open");
+  			});
 	});
 	
+	$("#dialog-quizzer-request select[name='category']").change( function () {
+		var category = $("#dialog-quizzer-request select[name='category']").val();
+		$("#dialog-quizzer-request select[name='subcategory']").load('/quizzer/subcategories',
+  			{'category': category, 'noall': 1});
+	});
+	
+	$("input[name='currentcategory']").val("0");
 	LoadQuestions(false);
+	$("#selectsubcategory").hide();
+	
+	$("#selectsubcategory select[name='selectsubcategory']").change( function () {
+		var category = $("input[name='currentcategory']").attr("value");
+		LoadQuestions(false);
+	});
 	
 });

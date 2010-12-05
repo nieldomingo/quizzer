@@ -35,9 +35,20 @@ handlers:
 - url: /tasks/.*
   script: tasks.py
   login: admin
+
+- url: /trainer/subcategories/.*
+  script: subcategories.py
   
 - url: /trainer/.*
   script: trainer.py
+  
+- url: /testquestions/.*
+  script: testquestions.py
+  login: admin
+  
+- url: /_ah/queue/deferred
+  script: $PYTHON_LIB/google/appengine/ext/deferred/handler.py
+  login: admin
 
 - url: .*
   script: main.py

@@ -11,6 +11,12 @@
 <div id="buttons">
 	<input name="add" value="Add Question" type="button"/>
 </div>
+<div id="selectsubcategory">
+	Select Subcategory:
+	<select name="selectsubcategory">
+		<option value="0" selected="True">All</option>
+	</select>
+</div>
 <div id="list">
 </div>
 
@@ -35,6 +41,15 @@
 								{% for cat in categories%}
 								<option value="{{cat.0}}">{{ cat.1 }}</option>
 								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">
+							<label for="category">Subcategory</label>
+						</div>
+						<div class="widget">
+							<select name="subcategory">
 							</select>
 						</div>
 					</div>
@@ -135,6 +150,14 @@
 		</div>
 		<div class="value">
 			<span id="categoryvalue"></span>
+		</div>
+	</div>
+	<div class="field">
+		<div class="label">
+			Subcategory
+		</div>
+		<div class="value">
+			<span id="subcategoryvalue"></span>
 		</div>
 	</div>
 	<div class="field">

@@ -42,6 +42,7 @@ $(document).ready(function() {
 		buttons: {
 			'Save': function () {
 				var category = $("#dialog-question-form select[name='category']").val();
+				var subcategory = $("#dialog-question-form select[name='subcategory']").val();
 				var qtype = $("#dialog-question-form select[name='type']").val();
 				var question = $("#dialog-question-form textarea[name='question']").val();
 				var answer = $("#dialog-question-form input[name='answer']").val();
@@ -78,6 +79,7 @@ $(document).ready(function() {
 					if (qtype == '1') {
 						$.post('/questions/save',
 							{'category': category,
+							'subcategory': subcategory,
 							'qtype': qtype,
 							'question': question,
 							'answer': answer,
@@ -88,6 +90,7 @@ $(document).ready(function() {
 					else if (qtype == '2') {
 						$.post('/questions/save',
 							{'category': category,
+							'subcategory': subcategory,
 							'qtype': qtype,
 							'question': question,
 							'answer': answer,
@@ -104,6 +107,7 @@ $(document).ready(function() {
 					if (qtype == '1') {
 						$.post('/questions/save',
 							{'category': category,
+							'subcategory': subcategory,
 							'qtype': qtype,
 							'question': question,
 							'answer': answer,
@@ -113,6 +117,7 @@ $(document).ready(function() {
 					else if (qtype == '2') {
 						$.post('/questions/save',
 							{'category': category,
+							'subcategory': subcategory,
 							'qtype': qtype,
 							'question': question,
 							'answer': answer,
@@ -182,6 +187,14 @@ $(document).ready(function() {
 			$("#answervalue").html(Wiky.toHtml(data['answer']));
 			$("#diagram-view").html(data['diagram']);
 			
+			// necessary to consider the case of questions without subcategory
+			if (data['subcategoryname']) {
+				$("#subcategoryvalue").text(data['subcategoryname']);
+			}
+			else {
+				$("#subcategoryvalue").text('no subcategory');
+			}
+			
 			if (data.type == 2) {
 				$("#otherchoicesview").show();
 				$("#otherchoice1").html(Wiky.toHtml(data['choice1']));
@@ -223,6 +236,20 @@ $(document).ready(function() {
 			$("#questionpreview").html(Wiky.toHtml(data['question']));
 			//AMprocessNode($("#questionpreview")[0]);
 			
+			var options = []
+			for (var i=0; i < data['subcategoryoptions'].length; i++) {
+				var ostr = '<option value="' + String(data['subcategoryoptions'][i][0]) + '">' + data['subcategoryoptions'][i][1] + '</option>'
+				options.push(ostr);
+			}
+			
+			var opthtml = options.join('\n');
+			
+			$("#question-form-tab select[name='subcategory']").html(opthtml);
+			
+			if (data['subcategoryname']) {
+				$("#question-form-tab select[name='subcategory']").val(data['subcategory']);
+			}
+			
 			$.loading(false);
 			$("#question-form-tab").tabs("select", 0);
 			$("#dialog-question-view").dialog("open");
@@ -233,6 +260,7 @@ $(document).ready(function() {
 		var cat = String(category)
 		var cursorval = '';
 		var prevcursors = '';
+		var subcategory = $("#selectsubcategory select[name='selectsubcategory']").val();
 		
 		if (usecursor) {
 			cursorval = $("input[name='listcursor']").val();
@@ -244,23 +272,24 @@ $(document).ready(function() {
 		}
 		
 		$.loading(true, {align: 'center'});
-		$("#list").load('/questions/list', {category: cat, 'cursor': cursorval, searchstring: searchstring, prevcursors: prevcursors}, function () {
-			$.loading(false);
-			$("#list tbody tr").click( function () {
-				var key = $(this).attr('title');
+		$("#list").load('/questions/list',
+			{category: cat, 'cursor': cursorval, searchstring: searchstring, prevcursors: prevcursors, subcategory: subcategory}, function () {
+				$.loading(false);
+				$("#list tbody tr").click( function () {
+					var key = $(this).attr('title');
+					
+					ViewQuestion(key);
+				});
+				$("#nextpage").click( function (event) {
+					var category = $("input[name='currentcategory']").val();
+					var searchstring = $("input[name='search']").val();
+					LoadQuestions(category, true, searchstring);
+					event.preventDefault();
+				});
 				
-				ViewQuestion(key);
-			});
-			$("#nextpage").click( function (event) {
-				var category = $("input[name='currentcategory']").val();
-				var searchstring = $("input[name='search']").val();
-				LoadQuestions(category, true, searchstring);
-				event.preventDefault();
-			});
-			
-			$("#previouspage").click( function (event) {
-				LoadPreviousQuestions();
-				event.preventDefault();
+				$("#previouspage").click( function (event) {
+					LoadPreviousQuestions();
+					event.preventDefault();
 			});
 		});
 	};
@@ -269,9 +298,10 @@ $(document).ready(function() {
 		var prevcursors = $("input[name='prevcursors']").val();
 		var category = $("input[name='currentcategory']").attr("value");
 		var searchstring = $("input[name='search']").val();
+		var subcategory = $("#selectsubcategory select[name='selectsubcategory']").val();
 		
 		$.loading(true, {align: 'center'});
-		$("#list").load('/questions/prevlist', {category: category, searchstring: searchstring, prevcursors: prevcursors}, function () {
+		$("#list").load('/questions/prevlist', {category: category, searchstring: searchstring, prevcursors: prevcursors, subcategory: subcategory}, function () {
 			$.loading(false);
 			$("#list tbody tr").click( function () {
 				var key = $(this).attr('title');
@@ -331,6 +361,17 @@ $(document).ready(function() {
   		var category = $(this).attr("value");
   		$("input[name='currentcategory']").val(category);
   		$("input[name='search']").val('');
+  		if (category != 0) {
+  			$("#selectsubcategory select[name='selectsubcategory']").load('/questions/subcategories',
+  				{'category': category},
+  				function () {
+  					$("#selectsubcategory").show();
+  				});
+  		}
+  		else {
+  			$("#selectsubcategory").hide();
+  		}
+  		$("#selectsubcategory select[name='selectsubcategory']").html('<option value="0" selected="True">All</option>');
   		LoadQuestions(category);
 	});
 	
@@ -429,4 +470,11 @@ $(document).ready(function() {
 	});
 	
 	LoadQuestions(0);
+	
+	$("#selectsubcategory").hide();
+	$("#selectsubcategory select[name='selectsubcategory']").change( function () {
+		var category = $("input[name='currentcategory']").attr("value");
+		$("input[name='search']").val('');
+		LoadQuestions(category);
+	});
 });

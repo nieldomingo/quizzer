@@ -6,6 +6,7 @@ class QuestionIndex(db.Model):
 	#quizzers = db.ListProperty(users.User)
 	datetime = db.DateTimeProperty(auto_now_add=True)
 	category = db.IntegerProperty()
+	subcategory = db.IntegerProperty()
 	active = db.BooleanProperty(default=True)
 	questiontype = db.IntegerProperty(default=1)
 	#timesanswered = db.IntegerProperty(default=0)
@@ -20,6 +21,7 @@ class Question(search.SearchableModel):
 	answer = db.StringProperty()
 	datetime = db.DateTimeProperty(auto_now_add=True)
 	category = db.IntegerProperty()
+	subcategory = db.IntegerProperty()
 	active = db.BooleanProperty(default=True)
 	#timesanswered = db.IntegerProperty(default=0) # for removal
 	index = db.ReferenceProperty(QuestionIndex)
@@ -43,6 +45,7 @@ class Question(search.SearchableModel):
 			search.SearchableModel.put(self, **kwargs)
 		else:
 			self.index.category = self.category
+			self.index.subcategory = self.subcategory
 			self.index.active = self.active
 			self.index.questiontype = self.questiontype
 			self.index.put()
@@ -58,6 +61,7 @@ class AnswerSession(db.Model):
 class QuestionQuizzerStats(db.Model):
 	quizzer = db.UserProperty(auto_current_user_add=True)
 	category = db.IntegerProperty()
+	subcategory = db.IntegerProperty()
 	questiondatetime = db.DateTimeProperty(auto_now_add=True)
 	questiontype = db.IntegerProperty(default=1)
 	timesanswered = db.IntegerProperty(default=0)
@@ -86,6 +90,11 @@ class DailySummaryCategoryCount(db.Model):
 	answeredcount = db.IntegerProperty(default=0)
 	correctcount = db.IntegerProperty(default=0)
 	avgduration = db.FloatProperty()
+
+class Subcategory(db.Model):
+	category = db.IntegerProperty()
+	subcategory = db.IntegerProperty()
+	name = db.StringProperty()
 	
 def increment_timesanswered(key):
 	q = db.get(key)

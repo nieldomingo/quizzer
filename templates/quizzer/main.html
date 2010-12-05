@@ -20,6 +20,12 @@
 	</span>
 	</form>
 </div>
+<div id="selectsubcategory">
+	Select Subcategory:
+	<select name="selectsubcategory">
+		<option value="0" selected="True">All</option>
+	</select>
+</div>
 <div id="list">
 </div>
 <div id="dialog-answer-result" title="Answer Question Result">
@@ -119,6 +125,13 @@
 						{% for cat in categories%}
 						<option value="{{cat.0}}">{{ cat.1 }}</option>
 						{% endfor %}
+					</select>
+				</div>
+				<div class="label">
+					<label for="category">Subcategory</label>
+				</div>
+				<div class="widget">
+					<select name="subcategory">
 					</select>
 				</div>
 			</div>

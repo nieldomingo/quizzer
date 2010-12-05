@@ -4,3 +4,6 @@ queue:
 - name: daily
   rate: 3/m
   bucket_size: 3
+- name: test
+  rate: 3/m
+  bucket_size: 3

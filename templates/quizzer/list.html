@@ -12,6 +12,7 @@
 	<thead>
 		<th>Type</th>
 		<th>Category</th>
+		<th>Subcategory</th>
 		<th>Question</th>
 	</thead>
 	<tbody>
@@ -20,12 +21,14 @@
 				<tr title="{{ q.key }}" class="answered">
 					<td>{{ q.questiontype }}</td>
 					<td>{{ q.category }}</td>
+					<td>{{ q.subcategory }}</td>s
 					<td>{{ q.question }}</td>
 				</tr>
 			{% else %}
 				<tr title="{{ q.key }}">
 					<td>{{ q.questiontype }}</td>
 					<td>{{ q.category }}</td>
+					<td>{{ q.subcategory }}</td>
 					<td>{{ q.question }}</td>
 				</tr>
 			{% endif %}
