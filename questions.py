@@ -235,11 +235,17 @@ class GetSubcategories(webapp.RequestHandler):
 	@requireusertype('Trainer', 'Encoder')
 	def post(self):
 		category = int(self.request.get('category'))
+		noall = self.request.get('noall')
+		
+		if noall:
+			allflag = False
+		else:
+			allflag = True
 		
 		subcategories = getsubcategories(category)
 		
 		path = os.path.join(os.path.dirname(__file__), 'templates/questions/subcategoryoptions.html')
-		self.response.out.write(template.render(path, dict(subcategories=subcategories)))
+		self.response.out.write(template.render(path, dict(subcategories=subcategories, allflag=allflag)))
 
 def main():
 	application = webapp.WSGIApplication([('/questions/', MainHandler),

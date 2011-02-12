@@ -349,9 +349,16 @@ $(document).ready(function() {
 		$("#dialog-question-form input[name='choice2']").val('');
 		$("#dialog-question-form input[name='choice3']").val('');
 		$("#answerspreview").html('');
+        
+        $("#question-form-tab").tabs("select", 0);
+        
+        $.loading(true, {align: 'center'});
+        $("#question-form-tab select[name='subcategory']").load('/questions/subcategories', {'category': '1', 'noall':  '1'}, function () {
+            $.loading(false);
+            $("#dialog-question-form" ).dialog("open");
+        });
 		
-		$("#question-form-tab").tabs("select", 0);
-		$("#dialog-question-form" ).dialog("open");
+		//$("#dialog-question-form" ).dialog("open");
 		
 	});
 	
@@ -477,4 +484,12 @@ $(document).ready(function() {
 		$("input[name='search']").val('');
 		LoadQuestions(category);
 	});
+    
+    $("#question-form-tab select[name='category']").change( function () {
+        var category = $(this).val();
+        $.loading(true, {align: 'center'});
+        $("#question-form-tab select[name='subcategory']").load('/questions/subcategories', {'category': category, 'noall':  '1'}, function () {
+            $.loading(false);
+        });
+    });
 });
