@@ -1,0 +1,13 @@
+<table>
+	<tbody>
+		{% for subcat in subcategories %}
+		<tr>
+			<td>
+				<input type="button" value="Edit" name="{{ subcat.1 }}"/>
+				<input type="hidden" name="subcategoryname" value="{{ subcat.0 }}" />
+			</td>
+			<td>{{ subcat.0 }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>

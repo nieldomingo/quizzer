@@ -1,0 +1,6 @@
+{% if allflag %}
+<option value="0" selected="True">All</option>
+{% endif %}
+{% for subcat in subcategories %}
+<option value="{{ subcat.0 }}">{{ subcat.1 }}</option>
+{% endfor %}

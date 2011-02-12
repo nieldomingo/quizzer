@@ -1,0 +1,59 @@
+{% extends "trainerbase.html" %}
+
+{% block title %}Manage Subcategories{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript" src="/javascripts/subcategories.js"></script>
+{% endblock %}
+
+{% block main %}
+<div>
+    Select Category:
+	<select name='category'>
+		{% for category in categories %}
+			<option value="{{ category.0 }}">{{ category.1 }}</option>
+		{% endfor %}
+	</select>
+</div>
+<div id="subcategorylist">
+</div>
+<p>
+	<input type="button" name="addsubcategory" value="Add Subcategory" />
+</p>
+
+<div id="dialog-subcategory-form" title="Add/Edit Subcategory">
+	<form>
+		<input name="subcategorykey" type="hidden" value=""/>
+		<div class="field">
+			<div class="label">
+				<label for="subcategoryname">Subcategory Name</label>
+			</div>
+			<div class="widget">
+				<input name="subcategoryname" type="text" />
+			</div>
+		</div>
+	</form>
+</div>
+
+<div id="dialog-subcategory-success" title="Success">
+	<p>
+	Subcategory Successfully Saved
+	</p>
+</div>
+
+<div id="dialog-subcategory-failed" title="Failed">
+	<p>
+	Failed in Saving Subcategory
+	</p>
+</div>
+
+<div id="dialog-subcategory-invalid" title="Invalid">
+	<p>
+	Invalid Subcategory Name
+	</p>
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
