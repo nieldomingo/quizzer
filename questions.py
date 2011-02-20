@@ -33,6 +33,7 @@ class Save(webapp.RequestHandler):
 		answer = self.request.get('answer')
 		key = self.request.get('key')
 		diagram = self.request.get('diagram')
+		active = self.request.get('active')
 		
 		if not key:
 			question = Question()
@@ -55,6 +56,11 @@ class Save(webapp.RequestHandler):
 			question.choices.append(self.request.get('choice3'))
 		else:
 			question.choices = []
+		
+		if active == 'true':
+			question.active = True
+		else:
+			question.active = False
 			
 		self.response.headers['Content-Type'] = 'text/json'
 		try:	
@@ -224,6 +230,8 @@ class QuestionDetail(webapp.RequestHandler):
 					d['subcategoryname'] = ''
 					
 				d['subcategoryoptions'] = subcategories
+				
+				d['active'] = question.active
 					
 				self.response.out.write(json.dumps(d))
 			else:

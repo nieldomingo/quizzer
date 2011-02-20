@@ -31,24 +31,24 @@ class Question(search.SearchableModel):
 	def SearchableProperties(cls):
 		return [['question']]
 		
-	def put(self, **kwargs):
-		search.SearchableModel.put(self, **kwargs)
-		if not self.index:
-			qi = QuestionIndex(parent=self,
-								quizzers=[],
-								datetime=self.datetime,
-								category=self.category,
-								active=self.active,
-								questiontype=self.questiontype)
-			qi.put()
-			self.index = qi
-			search.SearchableModel.put(self, **kwargs)
-		else:
-			self.index.category = self.category
-			self.index.subcategory = self.subcategory
-			self.index.active = self.active
-			self.index.questiontype = self.questiontype
-			self.index.put()
+#	def put(self, **kwargs):
+#		search.SearchableModel.put(self, **kwargs)
+#		if not self.index:
+#			qi = QuestionIndex(parent=self,
+#								quizzers=[],
+#								datetime=self.datetime,
+#								category=self.category,
+#								active=self.active,
+#								questiontype=self.questiontype)
+#			qi.put()
+#			self.index = qi
+#			search.SearchableModel.put(self, **kwargs)
+#		else:
+#			self.index.category = self.category
+#			self.index.subcategory = self.subcategory
+#			self.index.active = self.active
+#			self.index.questiontype = self.questiontype
+#			self.index.put()
 
 class AnswerSession(db.Model):
 	datetime = db.DateTimeProperty(auto_now_add=True)

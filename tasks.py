@@ -88,29 +88,30 @@ class SummarizeDayHandler(webapp.RequestHandler):
 			return
 		
 		for ans in anssession:
-			q = DailySummary.all()		
-			#q.filter('year =', year)
-			#q.filter('month =', month)
-			#q.filter('day =', day)
-			q.filter('datetime =', datetime.datetime(year=year, month=month, day=day))
-			q.filter('quizzer =', ans.quizzer)
-			
-			if q.count():
-				ds = q.fetch(1)[0]
-			else:
-				ds = DailySummary()
-				ds.quizzer = ans.quizzer
-				#ds.year = year
-				#ds.month = month
-				#ds.day = day
-				ds.datetime = datetime.datetime(year=year, month=month, day=day)
-				ds.put()
-			
-			q2 = DailySummaryMarker.all().ancestor(ds).filter('session =', ans)
-			if not q2.count():
-				category = ans.question.category
-				db.run_in_transaction(update_dailysummary, ds.key(), ans.correct, ans.duration, category, str(ans.key()))
-				db.run_in_transaction(update_dailysummary, dsmain.key(), ans.correct, ans.duration, category, str(ans.key()))
+			if ans.duration:
+				q = DailySummary.all()		
+				#q.filter('year =', year)
+				#q.filter('month =', month)
+				#q.filter('day =', day)
+				q.filter('datetime =', datetime.datetime(year=year, month=month, day=day))
+				q.filter('quizzer =', ans.quizzer)
+				
+				if q.count():
+					ds = q.fetch(1)[0]
+				else:
+					ds = DailySummary()
+					ds.quizzer = ans.quizzer
+					#ds.year = year
+					#ds.month = month
+					#ds.day = day
+					ds.datetime = datetime.datetime(year=year, month=month, day=day)
+					ds.put()
+				
+				q2 = DailySummaryMarker.all().ancestor(ds).filter('session =', ans)
+				if not q2.count():
+					category = ans.question.category
+					db.run_in_transaction(update_dailysummary, ds.key(), ans.correct, ans.duration, category, str(ans.key()))
+					db.run_in_transaction(update_dailysummary, dsmain.key(), ans.correct, ans.duration, category, str(ans.key()))
 				
 		if len(anssession) == entriespertask:
 			try:

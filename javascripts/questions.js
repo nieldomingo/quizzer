@@ -49,6 +49,15 @@ $(document).ready(function() {
 				var key = $("#dialog-question-form input[name='key']").val();
 				var diagram = $("#dialog-question-form input[name='diagram']").val();
 				
+				var active = true;
+				//if ($("#dialog-question-form input[name='active']").attr('checked')) {
+				if ($("#dialog-question-form input[name='active']").is(":checked")) {
+					active = true;
+				}
+				else {
+					active = false;
+				}
+				
 				if (qtype == '1') {
 					// check if there are empty fields
 					if (!question || !answer) {
@@ -84,7 +93,8 @@ $(document).ready(function() {
 							'question': question,
 							'answer': answer,
 							'key': key,
-							'diagram': diagram},
+							'diagram': diagram,
+							'active': active},
 							SaveQuestionResult, 'json');
 					}
 					else if (qtype == '2') {
@@ -98,7 +108,8 @@ $(document).ready(function() {
 							'choice2': choice2,
 							'choice3': choice3,
 							'key': key,
-							'diagram': diagram},
+							'diagram': diagram,
+							'active': active},
 							SaveQuestionResult, 'json');
 					}
 				}
@@ -111,7 +122,8 @@ $(document).ready(function() {
 							'qtype': qtype,
 							'question': question,
 							'answer': answer,
-							'diagram': diagram},
+							'diagram': diagram,
+							'active': active},
 							SaveQuestionResult, 'json');
 					}
 					else if (qtype == '2') {
@@ -124,7 +136,8 @@ $(document).ready(function() {
 							'choice1': choice1,
 							'choice2': choice2,
 							'choice3': choice3,
-							'diagram': diagram},
+							'diagram': diagram,
+							'active': active},
 							SaveQuestionResult, 'json');
 					}
 				}
@@ -248,6 +261,13 @@ $(document).ready(function() {
 			
 			if (data['subcategoryname']) {
 				$("#question-form-tab select[name='subcategory']").val(data['subcategory']);
+			}
+			
+			if (data['active'] == true) {
+				$("#question-form-tab input[name='active']").attr('checked', true);
+			}
+			else {
+				$("#question-form-tab input[name='active']").attr('checked', false);
 			}
 			
 			$.loading(false);
