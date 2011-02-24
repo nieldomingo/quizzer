@@ -233,3 +233,12 @@ indexes:
   properties:
   - name: usertype
   - name: fullname
+  
+- kind: QuestionQuizzerStats
+  properties:
+  - name: answeredcorrectly
+  - name: category
+  - name: quizzer
+  - name: subcategory
+  - name: questiondatetime
+    direction: desc
